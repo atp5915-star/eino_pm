@@ -1,0 +1,21 @@
+# 环境变量
+.env
+.env.local
+
+# 数据目录（每个用户本地）
+eino-examples/quickstart/chatwitheino/data/sessions/
+eino-examples/quickstart/chatwitheino/data/workspace/
+
+# 编译产物
+*.exe
+*.test
+*.out
+chatwitheino
+demo-server
+
+# 编辑器
+.vscode/
+.idea/
+.DS_Store
+
+
