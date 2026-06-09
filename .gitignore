@@ -10,8 +10,8 @@ eino-examples/quickstart/chatwitheino/data/workspace/
 *.exe
 *.test
 *.out
-chatwitheino
-demo-server
+/chatwitheino
+/demo-server
 
 # 编辑器
 .vscode/
