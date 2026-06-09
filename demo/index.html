@@ -294,24 +294,26 @@ body { display: flex; }
 /* Service prompt bubbles */
 .service-prompt-list {
   display: flex; flex-direction: column; gap: 14px;
-  margin-top: 14px; align-items: flex-start;
+  align-items: flex-start;
 }
+.msg-row.service-prompts { justify-content: flex-start; margin-top: -2px; }
 .service-prompt-chip {
-  min-height: 50px; padding: 11px 18px;
-  border-radius: 16px; border: none; background: #fff;
-  color: #000311; font-size: 17px; font-weight: 400; line-height: 24px;
-  display: inline-flex; align-items: center; gap: 11px; cursor: pointer;
+  min-height: 36px; padding: 10.36px 12.25px;
+  border-radius: 10px; border: none; background: #fff;
+  color: #000311; font-size: 15.07px; font-weight: 400; line-height: 20px;
+  font-family: "PingFang SC", "Droid Sans Fallback", PingFangSC-Regular, -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,.03);
   transition: transform .15s ease, background .15s ease;
 }
 .service-prompt-chip:active { transform: scale(.98); background: #f9fbff; }
-.service-prompt-chip.service-entry { padding-left: 14px; }
+.service-prompt-chip.service-entry { padding-left: 12.25px; }
 .service-prompt-icon {
-  width: 26px; height: 26px; flex-shrink: 0; border-radius: 8px;
+  width: 22px; height: 22px; flex-shrink: 0; border-radius: 7px;
   display: inline-flex; align-items: center; justify-content: center;
   overflow: hidden;
 }
-.service-prompt-icon svg { width: 26px; height: 26px; display: block; }
+.service-prompt-icon svg { width: 22px; height: 22px; display: block; }
 
 /* Service chips */
 .service-chips {
@@ -678,7 +680,7 @@ function chooseServicePrompts(text) {
 
 function renderServicePromptBubbles(sourceText) {
   const items = chooseServicePrompts(sourceText).slice(0, 3);
-  return `<div class="service-prompt-list">${items.map((item, idx) => {
+  return `<div class="service-prompt-list">${items.map((item) => {
     if (SERVICE_PROMPTS[item]) {
       const service = SERVICE_PROMPTS[item];
       const icon = SERVICE_ICON_SVGS[service.icon] || SERVICE_ICON_SVGS.doctor;
@@ -691,6 +693,15 @@ function renderServicePromptBubbles(sourceText) {
 function handleServicePromptClick(el) {
   const prompt = el.dataset.prompt || el.textContent.trim();
   sendMessage(prompt);
+}
+
+function appendServicePrompts(sourceText) {
+  const area = document.getElementById('chat-area');
+  const row = document.createElement('div');
+  row.className = 'msg-row service-prompts';
+  row.innerHTML = renderServicePromptBubbles(sourceText);
+  area.appendChild(row);
+  scrollChat();
 }
 
 function shouldUsePromptBubbles(text) {
@@ -747,8 +758,8 @@ function enrichBotBubble(bubble, sourceText) {
   const body = medicalType
     ? renderMedicalCard(medicalType)
     : (shouldUsePromptBubbles(sourceText) ? '' : renderServiceCard(chooseServiceCard(sourceText)));
-  const prompts = medicalType ? '' : renderServicePromptBubbles(sourceText);
-  bubble.insertAdjacentHTML('beforeend', body + renderMessageActions() + prompts);
+  bubble.insertAdjacentHTML('beforeend', body + renderMessageActions());
+  if (!medicalType) appendServicePrompts(sourceText);
 }
 
 // ─── UI ─────────────────────────────────────────────────────────────────────
