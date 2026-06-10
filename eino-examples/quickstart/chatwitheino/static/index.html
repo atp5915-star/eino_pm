@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>文心健康管家</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -200,32 +203,71 @@ body { display: flex; }
 .msg-bubble.user {
   background: var(--user-bubble-bg); color: #000311; border-radius: 16px 4px 16px 16px;
 }
-.msg-bubble p { margin-bottom: 0.5em; }
-.msg-bubble p:last-child { margin-bottom: 0; }
-.msg-bubble h1, .msg-bubble h2, .msg-bubble h3 {
-  margin: 12px 0 8px; color: #000311; font-weight: 600; letter-spacing: 0;
+.msg-bubble.bot {
+  font-size: 16.5px; line-height: 1.78; letter-spacing: .2px; overflow: hidden;
 }
-.msg-bubble h1 { font-size: 20px; line-height: 28px; }
-.msg-bubble h2 { font-size: 18px; line-height: 26px; }
-.msg-bubble h3 { font-size: 17px; line-height: 24px; }
-.msg-bubble ul, .msg-bubble ol { padding-left: 1.2em; margin: 4px 0; }
-.msg-bubble li { margin-bottom: 3px; }
-.msg-bubble pre { background: #e8ecf0; border-radius: 8px; padding: 8px 10px; overflow-x: auto; font-size: 12px; margin: 6px 0; }
-.msg-bubble code { font-size: 12px; }
+.msg-bubble.bot > :first-child { margin-top: 0; }
+.msg-bubble.bot > :last-child { margin-bottom: 0; }
+.msg-bubble p { margin: 8px 0 12px; }
+.msg-bubble p:last-child { margin-bottom: 0; }
+.msg-bubble strong { font-weight: 800; color: #000311; }
+.msg-bubble em { font-style: italic; }
+.msg-bubble del { color: #4b5563; text-decoration-thickness: 1.5px; text-decoration-color: #111827; }
+.msg-bubble u { text-decoration-color: #e7c7a7; text-decoration-thickness: 6px; text-underline-offset: -2px; }
+.msg-bubble h1, .msg-bubble h2, .msg-bubble h3, .msg-bubble h4, .msg-bubble h5, .msg-bubble h6 {
+  position: relative; margin: 20px 0 12px; padding-left: 14px; color: #000311; font-weight: 800; letter-spacing: 0; line-height: 1.35;
+}
+.msg-bubble h1::before, .msg-bubble h2::before, .msg-bubble h3::before, .msg-bubble h4::before, .msg-bubble h5::before, .msg-bubble h6::before {
+  content: ''; position: absolute; left: 0; top: .2em; width: 4px; height: 1.1em; border-radius: 4px; background: #18d5d5;
+}
+.msg-bubble h1 { font-size: 23px; }
+.msg-bubble h2 { font-size: 21px; }
+.msg-bubble h3 { font-size: 19px; }
+.msg-bubble h4 { font-size: 18px; }
+.msg-bubble h5 { font-size: 17px; }
+.msg-bubble h6 { font-size: 16px; }
+.msg-bubble hr { border: 0; border-top: 1px solid #edf0f5; margin: 18px 0; }
+.msg-bubble ul, .msg-bubble ol { margin: 10px 0 14px; padding-left: 0; list-style: none; }
+.msg-bubble li { position: relative; margin: 8px 0; padding-left: 26px; }
+.msg-bubble li > ul, .msg-bubble li > ol { margin: 8px 0 4px; }
+.msg-bubble ul > li::before {
+  content: ''; position: absolute; left: 2px; top: .72em; width: 7px; height: 7px; border: 2px solid #18c7c7; border-radius: 50%; background: #fff;
+}
+.msg-bubble ul ul > li::before { width: 5px; height: 5px; border-width: 0; background: #111827; }
+.msg-bubble ol { counter-reset: item; }
+.msg-bubble ol > li { counter-increment: item; }
+.msg-bubble ol > li::before {
+  content: counter(item); position: absolute; left: 0; top: .18em; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 7px;
+  background: #18c7c7; color: #fff; font-size: 12px; font-weight: 800; line-height: 18px; text-align: center;
+}
+.msg-bubble input[type="checkbox"] { margin: 0 8px 0 -2px; accent-color: #18c7c7; transform: scale(1.05); }
+.msg-bubble blockquote { margin: 12px 0; padding: 2px 0 2px 14px; border-left: 3px solid #e4e8ef; color: #767b86; }
+.msg-bubble blockquote p { margin: 8px 0; }
+.msg-bubble a { color: #138dcc; text-decoration: none; border-bottom: 1px solid rgba(19,141,204,.25); }
+.msg-bubble code {
+  padding: 2px 5px; border-radius: 5px; background: #f7f3f8; color: #b12bb8;
+  font-family: "SF Mono", Menlo, Consolas, monospace; font-size: .9em; font-style: italic;
+}
+.msg-bubble pre { margin: 12px 0; padding: 12px; border-radius: 12px; background: #f7f9fc; overflow-x: auto; border: 1px solid #edf0f5; }
+.msg-bubble pre code { display: block; padding: 0; background: transparent; color: #243044; font-size: 12.5px; line-height: 1.7; font-style: normal; }
+.msg-bubble .table-scroll { width: 100%; overflow-x: auto; margin: 12px 0; border: 1px solid #edf0f5; border-radius: 12px; }
 .msg-bubble table {
-  width: 100%; border-collapse: separate; border-spacing: 0; margin: 10px 0;
-  font-size: 14px; line-height: 20px; table-layout: fixed; overflow: hidden;
-  border: 1px solid #edf0f5; border-radius: 10px;
+  width: 100%; min-width: 100%; border-collapse: separate; border-spacing: 0;
+  font-size: 13.5px; line-height: 20px; table-layout: auto;
 }
 .msg-bubble th, .msg-bubble td {
-  padding: 9px 8px; vertical-align: top; text-align: left;
-  border-bottom: 1px solid #edf0f5; word-break: break-word;
+  padding: 9px 10px; vertical-align: top; text-align: left; white-space: nowrap;
+  border-right: 1px solid #edf0f5; border-bottom: 1px solid #edf0f5;
 }
+.msg-bubble th:last-child, .msg-bubble td:last-child { border-right: none; }
 .msg-bubble tr:last-child td { border-bottom: none; }
-.msg-bubble th {
-  background: #f5fbff; font-weight: 600; color: #000311;
-}
+.msg-bubble th { background: #f5fbff; font-weight: 700; color: #000311; }
 .msg-bubble td { background: #fff; color: #252833; }
+.msg-bubble img { display: block; max-width: 100%; max-height: 220px; object-fit: contain; margin: 10px 0; border-radius: 12px; background: #f8fafc; border: 1px solid #edf0f5; }
+.msg-bubble .image-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 10px 0; }
+.msg-bubble .image-group img { width: 100%; height: 110px; margin: 0; object-fit: cover; }
+.msg-bubble .image-group.collapsed img:nth-child(n+3) { display: none; }
+.msg-bubble .image-more { grid-column: 1 / -1; border: 1px dashed #cfd8e3; border-radius: 10px; color: #667085; background: #f8fafc; padding: 7px 10px; font-size: 13px; text-align: center; }
 
 /* Medical service big card */
 .medical-card {
@@ -768,7 +810,7 @@ function loadReportSampleImages() {
   }
 }
 
-const REPORT_SAMPLE_IMAGES = loadReportSampleImages();
+const REPORT_SAMPLE_IMAGES = loadReportSampleImages().slice(0, 5);
 const REPORT_IMAGE_QUERIES = REPORT_SAMPLE_IMAGES.length ? [
   { group: 'Skill 调度：report_reading_v1', tag: '样本图 1', text: '帮我解读这张报告单，重点说严重不严重', images: [REPORT_SAMPLE_IMAGES[0]] },
   { group: 'Skill 调度：report_reading_v1', tag: '样本图 2', text: '这份检查报告有什么异常？下一步怎么办？', images: [REPORT_SAMPLE_IMAGES[1] || REPORT_SAMPLE_IMAGES[0]] },
@@ -850,7 +892,7 @@ async function copyRecommendedQuery(btn) {
 function sendRecommendedQuery(btn) {
   const item = RECOMMENDED_QUERIES[Number(btn.dataset.index)];
   if (!item) return;
-  sendMessageWithImages(item.text, item.images || []);
+  sendMessageWithImages(item.text, (item.images || []).slice(0, 5));
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -1433,6 +1475,69 @@ function processA2UIMessage(msg) {
   addTrace('A2UI', msg);
 }
 
+function renderMarkdown(text) {
+  if (typeof marked === 'undefined') return esc(text);
+  marked.setOptions({ gfm: true, breaks: true, mangle: false, headerIds: false });
+  return marked.parse(text || '');
+}
+
+function enhanceBotMarkdown(root) {
+  if (!root) return;
+  root.querySelectorAll('table').forEach(table => {
+    if (table.parentElement && table.parentElement.classList.contains('table-scroll')) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'table-scroll';
+    table.parentNode.insertBefore(wrapper, table);
+    wrapper.appendChild(table);
+  });
+
+  const images = Array.from(root.querySelectorAll('p > img:only-child'));
+  let group = [];
+  const flushGroup = () => {
+    if (group.length <= 1) { group = []; return; }
+    const wrapper = document.createElement('div');
+    wrapper.className = `image-group${group.length >= 3 ? ' collapsed' : ''}`;
+    const firstParent = group[0].parentElement;
+    firstParent.parentNode.insertBefore(wrapper, firstParent);
+    group.forEach(img => {
+      const parent = img.parentElement;
+      wrapper.appendChild(img);
+      if (parent && parent.childNodes.length === 0) parent.remove();
+    });
+    if (group.length >= 3) {
+      const more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'image-more';
+      more.textContent = `展开全部 ${group.length} 张图片`;
+      more.addEventListener('click', () => {
+        wrapper.classList.remove('collapsed');
+        more.remove();
+      });
+      wrapper.appendChild(more);
+    }
+    group = [];
+  };
+
+  images.forEach(img => {
+    const parent = img.parentElement;
+    const previous = group[group.length - 1];
+    const isAdjacent = !previous || previous.parentElement.closest('p').nextElementSibling === parent;
+    if (!isAdjacent) flushGroup();
+    group.push(img);
+  });
+  flushGroup();
+
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(root, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      throwOnError: false,
+    });
+  }
+}
+
 function updateBotBubble(key, value) {
   for (const [id, comp] of Object.entries(components)) {
     if (comp.Text && comp.Text.dataKey === key && (comp.Text.usageHint || 'body') === 'body') {
@@ -1442,9 +1547,10 @@ function updateBotBubble(key, value) {
       }
       const cardParsed = extractCardBlocks(value);
       const parsed = extractInlineQuickTests(cardParsed.text);
-      const markdownHtml = typeof marked !== 'undefined' ? marked.parse(parsed.text) : esc(parsed.text);
+      const markdownHtml = renderMarkdown(parsed.text);
       const cardHtml = cardParsed.cards.map(renderSkillCard).join('');
       currentBotBubble.innerHTML = markdownHtml + cardHtml;
+      enhanceBotMarkdown(currentBotBubble);
       renderInlineQuickTests(key, parsed.cards);
       scrollChat();
     }
@@ -1488,7 +1594,7 @@ async function sendMessage(text) {
 }
 
 async function sendMessageWithImages(text, images = []) {
-  if (!text || isStreaming) return;
+  if ((!text && !images.length) || isStreaming) return;
   await ensureSession();
   appendUserMsg(text, images);
   showTyping();
@@ -1535,19 +1641,25 @@ async function sendMessageWithImages(text, images = []) {
 }
 
 // ─── Events ─────────────────────────────────────────────────────────────────
-function flushSend() {
+async function fileToDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function flushSend() {
   const input = document.getElementById('msg-input');
   const text = input.value.trim();
-  for (const img of pendingImages) {
-    appendUserImageBubble(img.url);
-    addTrace('SEND', `[image] ${img.file.name} (${(img.file.size/1024).toFixed(1)}KB)`);
-  }
+  if (!text && !pendingImages.length) return;
+  const images = await Promise.all(pendingImages.map(img => fileToDataURL(img.file)));
+  pendingImages.forEach(img => URL.revokeObjectURL(img.url));
   pendingImages = [];
   renderPreviews();
-  if (text) {
-    input.value = '';
-    sendMessage(text);
-  }
+  input.value = '';
+  await sendMessageWithImages(text || '请解读这些图片', images);
 }
 
 document.getElementById('send-btn').addEventListener('click', flushSend);
@@ -1571,6 +1683,10 @@ imageInput.addEventListener('change', (e) => {
   const files = Array.from(e.target.files || []);
   for (const file of files) {
     if (!file.type.startsWith('image/')) continue;
+    if (pendingImages.length >= 5) {
+      addTrace('ERROR', '一次对话最多只能上传 5 张图片');
+      break;
+    }
     const url = URL.createObjectURL(file);
     pendingImages.push({url, file});
   }
@@ -1599,17 +1715,6 @@ function renderPreviews() {
       renderPreviews();
     });
   });
-}
-
-function appendUserImageBubble(url) {
-  const area = document.getElementById('chat-area');
-  const sug = document.getElementById('initial-suggestions');
-  if (sug) sug.remove();
-  const row = document.createElement('div');
-  row.className = 'msg-row user';
-  row.innerHTML = `<div class="msg-bubble user-image"><img src="${url}"/></div>`;
-  area.appendChild(row);
-  scrollChat();
 }
 
 renderRecommendedQueries();
