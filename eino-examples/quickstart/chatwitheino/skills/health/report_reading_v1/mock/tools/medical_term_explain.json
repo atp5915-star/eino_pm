@@ -1,0 +1,15 @@
+{
+  "description": "医学术语通俗化解释 mock — 覆盖报告单常见冷术语",
+  "scenarios": [
+    {"match": {"term": "Ki-67"}, "response": {"term": "Ki-67", "plain": "细胞增殖指数：100 个肿瘤细胞中正在分裂的比例。数值越高，肿瘤越活跃，复发风险越大。"}},
+    {"match": {"term": "ALK"}, "response": {"term": "ALK 融合", "plain": "肺癌里的「钻石突变」，相当于踩死油门停不下来的开关；好处是有专门的靶向药精准打击。"}},
+    {"match": {"term": "sdLDL"}, "response": {"term": "小而密 LDL", "plain": "颗粒小、密度高的「坏胆固醇」，比普通 LDL 更容易钻进血管壁、更危险。"}},
+    {"match": {"term": "ApoB"}, "response": {"term": "载脂蛋白 B", "plain": "代表血液中坏胆固醇颗粒的「数量」，比单看 LDL 数值更能反映血管风险。"}},
+    {"match": {"term": "Lp(a)"}, "response": {"term": "脂蛋白(a)", "plain": "主要受遗传影响的特殊坏脂蛋白，目前没有特效药降低它，重点是控制其他血脂。"}},
+    {"match": {"term": "eGFR"}, "response": {"term": "肾小球滤过率", "plain": "肾脏过滤血液的速度，≥90 就是肾功能优等生。"}},
+    {"match": {"term": "EB-VCA-IgA"}, "response": {"term": "EB 病毒 VCA-IgA", "plain": "提示 EB 病毒既往感染或近期再激活，并不等于鼻咽癌，但需做鼻咽镜筛查。"}},
+    {"match": {"term": "D-TGCT"}, "response": {"term": "弥漫型腱鞘巨细胞瘤", "plain": "关节滑膜来源的良性肿瘤，弥漫型容易在原地复发但不会远处转移。"}},
+    {"match": {"term": "PTC"}, "response": {"term": "甲状腺乳头状癌", "plain": "外号「懒癌」，长得慢、对治疗敏感，规范治疗 5 年生存率 >95%。"}},
+    {"match": {"term": "*"}, "response": {"term": "{{term}}", "plain": "（请用通俗易懂的语言解释 {{term}} 的含义和临床意义）"}}
+  ]
+}

@@ -1,0 +1,258 @@
+{
+  "description": "报告单 OCR mock — 覆盖 18 case（4 意图 × 4 严重度 + 2 多轮）的关键字命中",
+  "scenarios": [
+    {
+      "match": {"image_url": "*糖耐*"},
+      "response": {
+        "report_type": "产检-化验",
+        "severity": "无异常",
+        "items": [
+          {"name": "空腹血糖", "value": "5.2 mmol/L", "ref_range": "孕期 <5.1", "abnormal_flag": "轻度偏高"},
+          {"name": "餐后 1h", "value": "8.6 mmol/L", "ref_range": "<10.0", "abnormal_flag": "正常"},
+          {"name": "餐后 2h", "value": "5.9 mmol/L", "ref_range": "<8.5", "abnormal_flag": "正常"}
+        ],
+        "key_findings": ["糖耐三项整体过关，仅空腹轻度超孕期标准"],
+        "suspected_diagnosis": null
+      }
+    },
+    {
+      "match": {"image_url": "*产后*"},
+      "response": {
+        "report_type": "影像-B超",
+        "severity": "轻度异常",
+        "items": [
+          {"name": "子宫大小", "value": "9.7×8.3×6 cm", "ref_range": "未孕 ≈鸭蛋大小", "abnormal_flag": "产后正常"},
+          {"name": "宫腔积液", "value": "0.8 cm", "ref_range": "<1 cm", "abnormal_flag": "少量"},
+          {"name": "双附件/膀胱", "value": "未见异常", "ref_range": "-", "abnormal_flag": "正常"}
+        ],
+        "key_findings": ["产后 13 天子宫复旧欠佳", "宫腔少量积液 0.8 cm", "其他盆腔脏器无异常"],
+        "suspected_diagnosis": "子宫复旧欠佳"
+      }
+    },
+    {
+      "match": {"image_url": "*腹部CT*"},
+      "response": {
+        "report_type": "影像-CT",
+        "severity": "中度异常",
+        "items": [
+          {"name": "L1 椎体", "value": "压缩性骨折，透亮线影", "ref_range": "-", "abnormal_flag": "新鲜骨折"},
+          {"name": "胸腰椎", "value": "退变、终板炎、骨质增生", "ref_range": "-", "abnormal_flag": "退行性"},
+          {"name": "肝/脾/胰/肾", "value": "未见挫伤", "ref_range": "-", "abnormal_flag": "正常"},
+          {"name": "胆管", "value": "肝内胆管、胆总管轻度扩张", "ref_range": "-", "abnormal_flag": "需复查"},
+          {"name": "附件区", "value": "1.6 cm 小囊性灶", "ref_range": "-", "abnormal_flag": "建议 B 超"}
+        ],
+        "key_findings": ["L1 压缩性骨折是主要病灶", "腹腔脏器未见破裂出血", "多发良性陈旧改变"],
+        "suspected_diagnosis": "L1 压缩性骨折 + 多发良性陈旧改变"
+      }
+    },
+    {
+      "match": {"image_url": "*病理*TGCT*"},
+      "response": {
+        "report_type": "病理",
+        "severity": "重度异常",
+        "items": [
+          {"name": "病变性质", "value": "弥漫型腱鞘巨细胞瘤（D-TGCT）", "ref_range": "-", "abnormal_flag": "良性"},
+          {"name": "Ki-67", "value": "30%", "ref_range": "<10% 低度", "abnormal_flag": "偏高"},
+          {"name": "局部坏死", "value": "已切除", "ref_range": "-", "abnormal_flag": "次要"}
+        ],
+        "key_findings": ["免疫组化符合腱鞘巨细胞瘤", "弥漫型 + Ki-67 30% 提示局部复发风险偏高"],
+        "suspected_diagnosis": "D-TGCT"
+      }
+    },
+    {
+      "match": {"image_url": "*吞咽*"},
+      "response": {
+        "report_type": "影像+化验",
+        "severity": "无异常",
+        "items": [
+          {"name": "肿瘤标志物（CEA/SCC/CYFRA21-1）", "value": "全阴", "ref_range": "阴性", "abnormal_flag": "正常"},
+          {"name": "颈部淋巴结", "value": "未见肿大", "ref_range": "-", "abnormal_flag": "正常"}
+        ],
+        "key_findings": ["头颈/食管肿瘤标志物全阴", "未见占位与淋巴结肿大"],
+        "suspected_diagnosis": null
+      }
+    },
+    {
+      "match": {"image_url": "*尿*微白蛋白*"},
+      "response": {
+        "report_type": "化验-尿常规",
+        "severity": "轻度异常",
+        "items": [
+          {"name": "尿白细胞", "value": "弱阳性 +-15", "ref_range": "0-25", "abnormal_flag": "弱阳"},
+          {"name": "微白蛋白", "value": "80 mg/L", "ref_range": "<30", "abnormal_flag": "偏高"}
+        ],
+        "key_findings": ["尿白细胞弱阳，多为留样误差", "微白蛋白偏高需复查 ACR"],
+        "suspected_diagnosis": null
+      }
+    },
+    {
+      "match": {"image_url": "*肛瘘*"},
+      "response": {
+        "report_type": "影像-CT",
+        "severity": "中度异常",
+        "items": [
+          {"name": "5 点钟方位软组织影", "value": "片状", "ref_range": "-", "abnormal_flag": "需进一步"}
+        ],
+        "key_findings": ["软组织影性质待定，CT 无法确诊肛瘘"],
+        "suspected_diagnosis": "疑似肛瘘"
+      }
+    },
+    {
+      "match": {"image_url": "*ALK*"},
+      "response": {
+        "report_type": "病理-基因检测",
+        "severity": "重度异常",
+        "items": [
+          {"name": "ALK 融合", "value": "阳性（EML4-ALK）", "ref_range": "阴性", "abnormal_flag": "阳性"}
+        ],
+        "key_findings": ["ALK 融合阳性 — 钻石突变，靶向药获益高"],
+        "suspected_diagnosis": "ALK 阳性肺癌"
+      }
+    },
+    {
+      "match": {"image_url": "*eGFR*"},
+      "response": {
+        "report_type": "化验-肾功",
+        "severity": "无异常",
+        "items": [
+          {"name": "eGFR", "value": "119", "ref_range": "≥90", "abnormal_flag": "正常"},
+          {"name": "尿素/肌酐比", "value": "19.23", "ref_range": "10-20", "abnormal_flag": "偏高"},
+          {"name": "尿常规", "value": "无蛋白/红白细胞", "ref_range": "-", "abnormal_flag": "正常"}
+        ],
+        "key_findings": ["肾功能优等生，无肾性水肿证据"],
+        "suspected_diagnosis": null
+      }
+    },
+    {
+      "match": {"image_url": "*胆囊息肉*"},
+      "response": {
+        "report_type": "影像-B超",
+        "severity": "轻度异常",
+        "items": [
+          {"name": "胆囊息肉", "value": "0.6 cm 单发，无血流信号", "ref_range": "<1 cm 低风险", "abnormal_flag": "低风险"}
+        ],
+        "key_findings": ["典型胆固醇性息肉，非肿瘤性"],
+        "suspected_diagnosis": "胆囊胆固醇性息肉"
+      }
+    },
+    {
+      "match": {"image_url": "*EB*VCA*"},
+      "response": {
+        "report_type": "化验-免疫",
+        "severity": "中度异常",
+        "items": [
+          {"name": "EB-VCA-IgA", "value": "阳性", "ref_range": "阴性", "abnormal_flag": "阳性"},
+          {"name": "空腹血糖", "value": "8.86 mmol/L", "ref_range": "<6.1", "abnormal_flag": "偏高"}
+        ],
+        "key_findings": ["EB-VCA-IgA 阳性需鼻咽镜筛查", "合并糖代谢异常"],
+        "suspected_diagnosis": "EB 病毒既往/再激活感染（待鉴别）"
+      }
+    },
+    {
+      "match": {"image_url": "*PTC*"},
+      "response": {
+        "report_type": "病理",
+        "severity": "重度异常",
+        "items": [
+          {"name": "肿瘤类型", "value": "甲状腺乳头状癌（PTC）", "ref_range": "-", "abnormal_flag": "恶性"},
+          {"name": "中央区淋巴结转移", "value": "5/6", "ref_range": "-", "abnormal_flag": "中危"}
+        ],
+        "key_findings": ["PTC 5/6 中央区淋巴结转移", "需碘 131 + TSH 抑制治疗 + 长期随访"],
+        "suspected_diagnosis": "PTC（懒癌）"
+      }
+    },
+    {
+      "match": {"image_url": "*胃镜*"},
+      "response": {
+        "report_type": "影像-胃镜",
+        "severity": "无异常",
+        "items": [
+          {"name": "食管/胃黏膜", "value": "未见占位", "ref_range": "-", "abnormal_flag": "正常"}
+        ],
+        "key_findings": ["黏膜结构正常，无占位 — 提示动力/感觉问题"],
+        "suspected_diagnosis": null
+      }
+    },
+    {
+      "match": {"image_url": "*白带*"},
+      "response": {
+        "report_type": "化验-白带",
+        "severity": "轻度异常",
+        "items": [
+          {"name": "乳酸杆菌", "value": "未检出", "ref_range": "+++", "abnormal_flag": "缺失"},
+          {"name": "过氧化氢", "value": "阳性", "ref_range": "阴性", "abnormal_flag": "阳性"},
+          {"name": "滴虫/霉菌/线索细胞", "value": "全阴", "ref_range": "阴性", "abnormal_flag": "正常"},
+          {"name": "清洁度", "value": "II 度", "ref_range": "I-II", "abnormal_flag": "正常"}
+        ],
+        "key_findings": ["阴道菌群失调，无明确致病菌感染"],
+        "suspected_diagnosis": "阴道菌群失调"
+      }
+    },
+    {
+      "match": {"image_url": "*血脂*"},
+      "response": {
+        "report_type": "化验-血脂",
+        "severity": "中度异常",
+        "items": [
+          {"name": "TG", "value": "2.66 mmol/L", "ref_range": "<1.7", "abnormal_flag": "偏高"},
+          {"name": "LDL-C", "value": "3.08", "ref_range": "<3.4", "abnormal_flag": "临界"},
+          {"name": "ApoB", "value": "偏高", "ref_range": "-", "abnormal_flag": "偏高"},
+          {"name": "sdLDL", "value": "偏高", "ref_range": "-", "abnormal_flag": "偏高"},
+          {"name": "Lp(a)", "value": "30.3", "ref_range": "<30", "abnormal_flag": "轻度偏高"}
+        ],
+        "key_findings": ["混合型高脂血症，sdLDL/ApoB 提示坏胆固醇质量差"],
+        "suspected_diagnosis": "混合型高脂血症"
+      }
+    },
+    {
+      "match": {"image_url": "*PET*鼻咽*"},
+      "response": {
+        "report_type": "影像-PET-CT",
+        "severity": "重度异常",
+        "items": [
+          {"name": "鼻咽肿瘤", "value": "侵犯颅底骨质（斜坡、蝶骨体）", "ref_range": "-", "abnormal_flag": "局部晚期"},
+          {"name": "颈部淋巴结", "value": "多发转移", "ref_range": "-", "abnormal_flag": "转移"}
+        ],
+        "key_findings": ["局部晚期鼻咽癌，需诱导化疗 + 同期放化疗"],
+        "suspected_diagnosis": "局部晚期鼻咽癌"
+      }
+    },
+    {
+      "match": {"image_url": "*肋骨骨折*"},
+      "response": {
+        "report_type": "影像-CT",
+        "severity": "中度异常",
+        "items": [
+          {"name": "肋骨", "value": "左 7、9 前肋及左 12 后肋骨折", "ref_range": "-", "abnormal_flag": "新鲜骨折"},
+          {"name": "右肺多发磨玻璃结节", "value": "最大 5×3 mm", "ref_range": "<6 mm 低风险", "abnormal_flag": "低风险"},
+          {"name": "陈旧钙化结节、纤维条索", "value": "多发", "ref_range": "-", "abnormal_flag": "良性"}
+        ],
+        "key_findings": ["多发肋骨骨折是主要病灶", "右肺小结节风险低，1 年复查"],
+        "suspected_diagnosis": "多发肋骨骨折"
+      }
+    },
+    {
+      "match": {"image_url": "*激素六项*"},
+      "response": {
+        "report_type": "化验-激素",
+        "severity": "中度异常",
+        "items": [
+          {"name": "PRL（泌乳素）", "value": "升高", "ref_range": "-", "abnormal_flag": "偏高"},
+          {"name": "睾酮 / 雄烯二酮", "value": "偏高", "ref_range": "-", "abnormal_flag": "偏高"}
+        ],
+        "key_findings": ["高泌乳素血症 + PCOS 倾向，是闭经直接原因"],
+        "suspected_diagnosis": "高 PRL 血症 + PCOS"
+      }
+    },
+    {
+      "match": {"image_url": "*"},
+      "response": {
+        "report_type": "未知",
+        "severity": "中度异常",
+        "items": [],
+        "key_findings": ["（兜底）请按通用四段式输出"],
+        "suspected_diagnosis": null
+      }
+    }
+  ]
+}

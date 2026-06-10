@@ -103,6 +103,8 @@ func healthSkillSystemPrompt(_ context.Context, toolName string) string {
 
 特别注意：皮肤/体表/脚部/头皮/指甲/私密部位相关症状，例如痒、越抓越痒、红、肿、疹、疱、脱皮、脚痒、皮损原因、怎么回事、怎么办等，必须调用 skin_diagnosis_v1，参数为 {"skill":"skin_diagnosis_v1"}。
 
+特别注意：医学报告单/化验单/影像报告/病理报告/体检报告/产检报告相关解读，例如“帮我看看检查报告”“这份化验单严重吗”“CT 报告是不是肛瘘”“病理报告下一步怎么办”等，必须调用 report_reading_v1，参数为 {"skill":"report_reading_v1"}。如果当前没有真实图片，先基于用户文字说明给上传引导，不要编造图片内容。
+
 调用 Skill 后，根据工具返回的完整 Skill 说明继续回答用户。`, toolName)
 }
 
@@ -117,13 +119,13 @@ func healthSkillToolDescription(_ context.Context, skills []skill.FrontMatter) s
 		builder.WriteString(strings.TrimSpace(item.Description))
 		builder.WriteString("\n")
 	}
-	builder.WriteString("\n强制路由示例：用户说‘脚越抓越痒是什么原因？’、‘手臂红疹很痒’、‘身上起疙瘩怎么办’时，调用参数必须是 {\"skill\":\"skin_diagnosis_v1\"}。")
+	builder.WriteString("\n强制路由示例：用户说‘脚越抓越痒是什么原因？’、‘手臂红疹很痒’、‘身上起疙瘩怎么办’时，调用参数必须是 {\"skill\":\"skin_diagnosis_v1\"}。用户说‘帮我看看检查报告’、‘这份化验单严重吗’、‘CT 报告是不是肛瘘’时，调用参数必须是 {\"skill\":\"report_reading_v1\"}。")
 	return builder.String()
 }
 
 func healthSkillToolParams(_ context.Context, defaults map[string]*schema.ParameterInfo) (map[string]*schema.ParameterInfo, error) {
-	defaults["skill"].Desc = "要调用的健康 Skill 名称。皮肤/体表/脚部瘙痒、红疹、脱皮、皮损原因等首轮诊断问题必须填 skin_diagnosis_v1。"
-	defaults["skill"].Enum = []string{"skin_diagnosis_v1", "skin_collection_v1", "skin_care_plan_v1", "doctor_voice_answer_v2"}
+	defaults["skill"].Desc = "要调用的健康 Skill 名称。皮肤/体表/脚部瘙痒、红疹、脱皮、皮损原因等首轮诊断问题必须填 skin_diagnosis_v1；医学报告单/化验单/影像报告/病理报告解读问题必须填 report_reading_v1。"
+	defaults["skill"].Enum = []string{"skin_diagnosis_v1", "skin_collection_v1", "skin_care_plan_v1", "doctor_voice_answer_v2", "report_reading_v1"}
 	return defaults, nil
 }
 

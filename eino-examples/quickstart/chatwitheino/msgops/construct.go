@@ -38,10 +38,69 @@ type ToolResult struct {
 
 // NewUser constructs a user message for M.
 func NewUser[M adk.MessageType](text string) M {
-	if KindOf[M]() == KindAgentic {
-		return any(schema.UserAgenticMessage(text)).(M)
+	return NewUserWithImages[M](text, nil)
+}
+
+// ImageInput contains an image URL or base64 payload for multimodal user messages.
+type ImageInput struct {
+	URL        string
+	Base64Data string
+	MIMEType   string
+}
+
+// NewUserWithImages constructs a user message with optional image URLs for M.
+func NewUserWithImages[M adk.MessageType](text string, imageURLs []string) M {
+	images := make([]ImageInput, 0, len(imageURLs))
+	for _, imageURL := range imageURLs {
+		images = append(images, ImageInput{URL: imageURL})
 	}
-	return any(schema.UserMessage(text)).(M)
+	return NewUserWithImageInputs[M](text, images)
+}
+
+// NewUserWithImageInputs constructs a user message with optional image inputs for M.
+func NewUserWithImageInputs[M adk.MessageType](text string, images []ImageInput) M {
+	if KindOf[M]() == KindAgentic {
+		blocks := []*schema.ContentBlock{schema.NewContentBlock(&schema.UserInputText{Text: text})}
+		for _, image := range images {
+			blocks = append(blocks, schema.NewContentBlock(&schema.UserInputImage{
+				URL:        image.URL,
+				Base64Data: image.Base64Data,
+				MIMEType:   image.MIMEType,
+				Detail:     schema.ImageURLDetailAuto,
+			}))
+		}
+		return any(&schema.AgenticMessage{
+			Role:          schema.AgenticRoleTypeUser,
+			ContentBlocks: blocks,
+		}).(M)
+	}
+
+	msg := schema.UserMessage(text)
+	if len(images) > 0 {
+		msg.Content = ""
+		msg.UserInputMultiContent = []schema.MessageInputPart{{
+			Type: schema.ChatMessagePartTypeText,
+			Text: text,
+		}}
+		for _, image := range images {
+			part := schema.MessageInputPart{
+				Type: schema.ChatMessagePartTypeImageURL,
+				Image: &schema.MessageInputImage{
+					MessagePartCommon: schema.MessagePartCommon{MIMEType: image.MIMEType},
+					Detail:            schema.ImageURLDetailAuto,
+				},
+			}
+			if image.Base64Data != "" {
+				base64Data := image.Base64Data
+				part.Image.Base64Data = &base64Data
+			} else {
+				url := image.URL
+				part.Image.URL = &url
+			}
+			msg.UserInputMultiContent = append(msg.UserInputMultiContent, part)
+		}
+	}
+	return any(msg).(M)
 }
 
 // NewSystem constructs a system message for M.

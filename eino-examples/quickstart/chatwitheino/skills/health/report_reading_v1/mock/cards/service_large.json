@@ -1,0 +1,85 @@
+{
+  "description": "医疗服务大卡 mock — 按报告类型出对应专科",
+  "variants": [
+    {
+      "id": "report_oncology",
+      "trigger_hint": "病理报告（PTC / D-TGCT / 鼻咽癌等）",
+      "data": {
+        "card_type": "service_large",
+        "header": {"badge": "卫健委认证医疗机构", "stats": "已服务 1470 万患者"},
+        "sections": [
+          {
+            "title": "权威专家·肿瘤亚专业",
+            "items": [
+              {
+                "name": "李建国",
+                "title": "主任医师",
+                "department": "肿瘤内科",
+                "hospital": "中国医学科学院肿瘤医院",
+                "hospital_level": "三甲",
+                "hospital_rank": "全国医院综合排行 A++++",
+                "stats": {"consultations": 5821, "response_time": "30 分钟内"},
+                "specialties": ["肺癌靶向治疗", "甲状腺癌", "软组织肿瘤"],
+                "price": {"current": 45.0},
+                "action": {"label": "去咨询", "url": "#mock"}
+              }
+            ]
+          }
+        ],
+        "footer": {"label": "查看更多专家", "url": "#mock"}
+      }
+    },
+    {
+      "id": "report_anorectal",
+      "trigger_hint": "肛瘘 / 痔 / 肠道相关报告",
+      "data": {
+        "card_type": "service_large",
+        "header": {"badge": "肛肠外科专家团队", "stats": "累计解答 30 万+ 肛肠问题"},
+        "sections": [
+          {
+            "title": "肛肠外科 · 60s 响应",
+            "items": [
+              {
+                "name": "免费咨询",
+                "tags": ["专属补贴"],
+                "subtitle": "三甲医生·15 分钟一对一",
+                "price": {"current": 0, "original": null},
+                "action": {"label": "去咨询", "url": "#mock"}
+              }
+            ]
+          }
+        ],
+        "footer": {"label": "查看更多", "url": "#mock"}
+      }
+    },
+    {
+      "id": "report_general",
+      "trigger_hint": "通用兜底（中重度异常但科室不明确）",
+      "data": {
+        "card_type": "service_large",
+        "header": {"badge": "卫健委认证医疗机构", "stats": "已服务 1470 万患者"},
+        "sections": [
+          {
+            "title": "极速问医生·60s 响应",
+            "items": [
+              {
+                "name": "免费咨询",
+                "tags": ["专属补贴"],
+                "subtitle": "真人医生·15 分钟一对一服务",
+                "price": {"current": 0, "original": null},
+                "action": {"label": "去咨询", "url": "#mock"}
+              },
+              {
+                "name": "问三甲医生",
+                "subtitle": "三甲医生服务·不满意随时退款",
+                "price": {"current": 6.9, "original": 9.9},
+                "action": {"label": "去咨询", "url": "#mock"}
+              }
+            ]
+          }
+        ],
+        "footer": {"label": "查看更多", "url": "#mock"}
+      }
+    }
+  ]
+}

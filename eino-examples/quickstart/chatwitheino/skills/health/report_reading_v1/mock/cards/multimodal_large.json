@@ -1,0 +1,23 @@
+{
+  "description": "拍照/上传引导卡 mock — 用户首次进入但未上传报告时使用",
+  "variants": [
+    {
+      "id": "report_upload_default",
+      "trigger_hint": "用户表达想解读报告但还没传图",
+      "data": {
+        "card_type": "multimodal_large",
+        "guide": {
+          "images": [
+            {"label": "光线充足", "url": "#mock_light"},
+            {"label": "整张报告完整入框", "url": "#mock_full"},
+            {"label": "避免反光遮挡数值", "url": "#mock_clear"}
+          ]
+        },
+        "actions": [
+          {"icon": "camera", "label": "拍照", "action": {"type": "camera", "label": "去拍照"}},
+          {"icon": "gallery", "label": "上传照片", "action": {"type": "gallery", "label": "去上传"}}
+        ]
+      }
+    }
+  ]
+}

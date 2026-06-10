@@ -105,7 +105,10 @@ body { display: flex; }
   padding: 10px 10px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.03);
 }
 .query-text { font-size: 13px; line-height: 19px; color: #111827; margin-bottom: 8px; }
-.query-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.query-image-count { display: inline-flex; margin-left: 6px; padding: 1px 6px; border-radius: 9px; background: #fff7ed; color: #ea580c; font-size: 10px; }
+.query-image-strip { display: flex; gap: 6px; margin: 0 0 8px; overflow-x: auto; padding-bottom: 2px; }
+.query-image-thumb { width: 54px; height: 54px; border-radius: 9px; border: 1px solid #e8eef5; object-fit: cover; background: #f8fafc; flex: 0 0 auto; }
+.query-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
 .query-tag { font-size: 11px; color: #00a6a6; background: #e8fafa; border-radius: 10px; padding: 2px 8px; }
 .query-copy {
   border: 1px solid #d7dde6; background: #fff; color: #374151; border-radius: 10px;
@@ -317,6 +320,77 @@ body { display: flex; }
   padding: 0 14px;
 }
 
+/* Multimodal service large card */
+.multimodal-large-card {
+  margin-top: 14px; color: #000311;
+}
+.multimodal-large-card .mm-guide {
+  background: #fff; border-radius: 2px 24px 24px 24px;
+  padding: 18px 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+.multimodal-large-card .mm-desc {
+  font-size: 22px; line-height: 1.65; letter-spacing: .5px; margin-bottom: 18px;
+}
+.multimodal-large-card .mm-examples {
+  display: grid; grid-template-columns: 1fr 1fr; overflow: hidden;
+  border-radius: 18px; background: #f7f7fb; border: 1px solid #f0f1f6;
+}
+.multimodal-large-card .mm-example {
+  min-height: 170px; padding: 14px 12px 12px; display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start; gap: 10px;
+}
+.multimodal-large-card .mm-example + .mm-example { border-left: 1px solid #e3e5eb; }
+.multimodal-large-card .mm-label {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 18px; line-height: 24px; color: #282b35;
+}
+.multimodal-large-card .mm-check {
+  width: 20px; height: 20px; border-radius: 50%; border: 2px solid #2c3038;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 13px; line-height: 1;
+}
+.multimodal-large-card .mm-check.bad { border-color: #282b35; }
+.multimodal-large-card .mm-visual {
+  width: 100%; height: 112px; border-radius: 12px; overflow: hidden; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #fff, #eef3f8);
+}
+.multimodal-large-card .mm-visual.report::before,
+.multimodal-large-card .mm-visual.report::after {
+  content: ''; position: absolute; background: #fff; border: 1px solid #d7dbe3;
+}
+.multimodal-large-card .mm-visual.report::before { width: 78%; height: 70%; transform: rotate(-2deg); box-shadow: 0 8px 18px rgba(20,40,70,.08); }
+.multimodal-large-card .mm-visual.report::after { width: 62%; height: 1px; box-shadow: 0 14px 0 #cfd5df, 0 28px 0 #cfd5df, 0 42px 0 #cfd5df; }
+.multimodal-large-card .mm-visual.phone::before {
+  content: ''; width: 92%; height: 70%; border-radius: 24px; background: #1f232b;
+  box-shadow: inset 12px 0 0 #11151c, inset -12px 0 0 #2f343c;
+}
+.multimodal-large-card .mm-visual.phone::after {
+  content: ''; position: absolute; width: 58%; height: 42%; background: #fff; border: 1px solid #d8dde6;
+  box-shadow: 0 10px 0 -8px #cfd5df, 0 22px 0 -20px #cfd5df;
+}
+.multimodal-large-card .mm-visual.drug::before { content: ''; width: 72%; height: 48%; border-radius: 12px; background: linear-gradient(135deg, #fff, #d7ccff 54%, #9fe7f0); transform: rotate(-10deg); box-shadow: 0 10px 24px rgba(50,70,120,.14); }
+.multimodal-large-card .mm-visual.skin::before { content: ''; width: 82px; height: 82px; border-radius: 50%; background: linear-gradient(135deg, #ffe0d2, #ffd7e4); box-shadow: 34px 22px 0 -22px #ef7d7d, 20px -14px 0 -26px #f46d84; }
+.multimodal-large-card .mm-visual.food::before { content: ''; width: 78%; height: 62%; border-radius: 14px; background: linear-gradient(90deg, #fff 0 42%, #f59e0b 42% 58%, #6fbf59 58% 72%, #fff 72%); border: 8px solid #d8dde6; box-shadow: inset 0 0 0 2px #eef1f5; }
+.multimodal-large-card .mm-visual.tongue::before { content: ''; width: 94px; height: 112px; border-radius: 50% 50% 46% 46%; background: linear-gradient(#f5b29c, #df6f63); box-shadow: inset 0 -24px 0 rgba(176,46,42,.16); }
+.multimodal-large-card .mm-provider {
+  margin-top: 10px; display: flex; align-items: center; gap: 6px; color: #8d919b; font-size: 14px;
+}
+.multimodal-large-card .mm-actions {
+  margin-top: 14px; background: #fff; border-radius: 22px; padding: 0 18px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+.multimodal-large-card .mm-action {
+  min-height: 78px; display: flex; align-items: center; gap: 18px; border-bottom: 1px solid #edf0f5;
+}
+.multimodal-large-card .mm-action:last-child { border-bottom: none; }
+.multimodal-large-card .mm-action-icon { width: 34px; height: 34px; color: #252833; }
+.multimodal-large-card .mm-action-label { flex: 1; font-size: 24px; line-height: 32px; }
+.multimodal-large-card .mm-action-btn {
+  border: none; border-radius: 21px; min-width: 84px; height: 42px; padding: 0 18px;
+  background: linear-gradient(to right, #00CFA3, #00D3EA); color: #fff;
+  font-size: 18px; font-weight: 600; cursor: pointer;
+}
+
 /* Quick test card */
 .quick-test-card {
   margin-top: 18px; padding: 18px; border-radius: 18px; background: #fff;
@@ -459,12 +533,22 @@ body { display: flex; }
   line-height: 1;
 }
 
-/* User image bubble */
-.msg-bubble.user-image {
-  background: transparent; padding: 0; max-width: 60%;
-  border-radius: 12px; overflow: hidden;
+/* User image attachments */
+.user-message-stack {
+  max-width: 78%; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
 }
-.msg-bubble.user-image img { width: 100%; max-width: 200px; display: block; border-radius: 12px; }
+.user-attachment-grid {
+  display: grid; gap: 8px; width: min(260px, 100%);
+  grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+}
+.user-attachment-grid.single { width: min(220px, 100%); grid-template-columns: 1fr; }
+.user-attachment-card {
+  background: #fff; border: 1px solid #e7edf4; border-radius: 14px; padding: 6px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, .08);
+}
+.user-attachment-card img {
+  width: 100%; max-height: 220px; object-fit: contain; border-radius: 10px; display: block; background: #f8fafc;
+}
 
 </style>
 </head>
@@ -674,6 +758,24 @@ function formatJSON(obj) {
 }
 
 // ─── Recommended Queries ────────────────────────────────────────────────────
+function loadReportSampleImages() {
+  try {
+    const raw = localStorage.getItem('reportSampleImages');
+    const images = raw ? JSON.parse(raw) : [];
+    return Array.isArray(images) ? images.filter(Boolean) : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+const REPORT_SAMPLE_IMAGES = loadReportSampleImages();
+const REPORT_IMAGE_QUERIES = REPORT_SAMPLE_IMAGES.length ? [
+  { group: 'Skill 调度：report_reading_v1', tag: '样本图 1', text: '帮我解读这张报告单，重点说严重不严重', images: [REPORT_SAMPLE_IMAGES[0]] },
+  { group: 'Skill 调度：report_reading_v1', tag: '样本图 2', text: '这份检查报告有什么异常？下一步怎么办？', images: [REPORT_SAMPLE_IMAGES[1] || REPORT_SAMPLE_IMAGES[0]] },
+  { group: 'Skill 调度：report_reading_v1', tag: '样本图 3', text: '帮我看下这份报告，需要挂什么科复查？', images: [REPORT_SAMPLE_IMAGES[2] || REPORT_SAMPLE_IMAGES[0]] },
+  { group: 'Skill 调度：report_reading_v1', tag: '多图批量', text: '请综合解读这几张报告单，按严重程度排序', images: REPORT_SAMPLE_IMAGES },
+] : [];
+
 const RECOMMENDED_QUERIES = [
   { group: 'Skill 调度：skin_diagnosis_v1', tag: '首轮诊断', text: '手臂上起了一片红疹，很痒，是怎么回事？' },
   { group: 'Skill 调度：skin_diagnosis_v1', tag: '皮肤亚健康', text: '脚越抓越痒是什么原因？' },
@@ -688,6 +790,11 @@ const RECOMMENDED_QUERIES = [
   { group: 'Skill 调度：doctor_voice_answer_v2', tag: '二元判断', text: '感冒了能吃鸡蛋吗？' },
   { group: 'Skill 调度：doctor_voice_answer_v2', tag: '指标解读', text: '体检肌酐 120 严重吗？' },
   { group: 'Skill 调度：doctor_voice_answer_v2', tag: '中草药功效', text: '奶蓟草护肝是真的吗？' },
+  { group: 'Skill 调度：report_reading_v1', tag: '无图上传引导', text: '帮我看看检查报告' },
+  ...REPORT_IMAGE_QUERIES,
+  { group: 'Skill 调度：report_reading_v1', tag: '严重度判断', text: '我这份化验单有几项偏高，严重吗？' },
+  { group: 'Skill 调度：report_reading_v1', tag: '影像鉴别', text: 'CT 报告写 5 点钟方位软组织影，这是肛瘘吗？' },
+  { group: 'Skill 调度：report_reading_v1', tag: '处置建议', text: '病理报告写 D-TGCT，下一步应该怎么治疗和复查？' },
   { group: '回答策略', tag: '表格/检查', text: '脑肠轴紊乱需要做什么检查？' },
   { group: '回答策略', tag: '风险判断', text: '高血压会偏头痛吗？' },
   { group: '回答策略', tag: '用药安全', text: '一岁小朋友吃布洛芬可以吗？' },
@@ -714,10 +821,14 @@ function renderRecommendedQueries() {
   });
   queryContent.innerHTML = Array.from(groups.entries()).map(([group, items]) => `<div class="query-section">
     <div class="query-section-title">${esc(group)}</div>
-    ${items.map(item => `<div class="query-item">
-      <div class="query-text">${esc(item.text)}</div>
-      <div class="query-meta"><span class="query-tag">${esc(item.tag)}</span><button class="query-copy" data-query="${attrEsc(item.text)}" onclick="copyRecommendedQuery(this)">复制</button></div>
-    </div>`).join('')}
+    ${items.map(item => {
+      const imageStrip = item.images ? `<div class="query-image-strip">${item.images.map(url => `<img class="query-image-thumb" src="${attrEsc(url)}" loading="lazy"/>`).join('')}</div>` : '';
+      return `<div class="query-item">
+        <div class="query-text">${esc(item.text)}${item.images ? `<span class="query-image-count">附 ${item.images.length} 张图</span>` : ''}</div>
+        ${imageStrip}
+        <div class="query-meta"><span class="query-tag">${esc(item.tag)}</span><button class="query-copy" data-query="${attrEsc(item.text)}" onclick="copyRecommendedQuery(this)">复制</button>${item.images ? `<button class="query-copy" data-index="${RECOMMENDED_QUERIES.indexOf(item)}" onclick="sendRecommendedQuery(this)">发送+图片</button>` : ''}</div>
+      </div>`;
+    }).join('')}
   </div>`).join('');
 }
 
@@ -734,6 +845,12 @@ async function copyRecommendedQuery(btn) {
   btn.textContent = '已复制';
   btn.classList.add('copied');
   setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 1200);
+}
+
+function sendRecommendedQuery(btn) {
+  const item = RECOMMENDED_QUERIES[Number(btn.dataset.index)];
+  if (!item) return;
+  sendMessageWithImages(item.text, item.images || []);
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -885,6 +1002,110 @@ function renderDrugMedicalCard(data) {
 
 function renderHospitalMedicalCard(data) {
   return `<div class="medical-card"><div class="medical-intro">${data.intro}</div><div class="medical-list">${data.items.map(item => `<div class="medical-item"><div class="logo">医院<br/>LOGO</div><div class="item-main"><div class="item-title">${esc(item.name)}</div><div class="item-tags"><span class="tag green">三甲</span><span class="tag">医保定点</span><span class="tag">可挂号</span><span class="tag">可问诊</span></div><div class="item-tags"><span class="tag">复旦榜</span><span class="tag">全国医院综合排行 A++++</span></div><div class="item-meta"><span style="color:#ef6b3a">${esc(item.score)}</span></div><div class="item-sub">${esc(item.address)}</div><div class="hospital-actions">${item.actions.map(action => `<button class="buy-btn">${esc(action)}</button>`).join('')}</div></div></div>`).join('')}</div><div class="more-link">查看更多 ›</div></div>`;
+}
+
+const MULTIMODAL_PRESETS = {
+  report: {
+    title: '报告单解读',
+    desc: '您可上传医院就诊记录、血液、尿液等检验报告；B超、X光片、CT、核磁等检查报告，我将马上为您进行深度解读~^_^',
+    labels: ['平整放置', '完整拍摄'],
+    visuals: ['report', 'phone']
+  },
+  drug: {
+    title: '药盒识别',
+    desc: '您可拍摄带有药品名称的药盒、药品内外包装、药瓶等图片，我将识别并搜索人工审核的药品库后为您进行解读~',
+    labels: ['平整放置', '完整拍摄'],
+    visuals: ['drug', 'phone']
+  },
+  skin: {
+    title: '皮肤病检测',
+    desc: '请上传清晰完整的患处图片，将皮肤患处置于图片中央，背景尽量简单统一，保持拍摄画面清晰、明亮、无美颜我将马上为您进行深度解读~^_^',
+    labels: ['清晰拍摄', '光线明亮'],
+    visuals: ['skin', 'skin']
+  },
+  diet: {
+    title: '饮食营养解读',
+    desc: '您可以拍摄菜肴、食材或食品配料表的照片，请尽可能摆正相机清晰拍摄，我会识别食物种类，帮您分析营养成分与热量~',
+    labels: ['平整放置', '完整拍摄'],
+    visuals: ['food', 'phone']
+  },
+  tongue: {
+    title: '中医舌诊',
+    desc: '您可以在光线充足的地方自拍您的舌头，拍摄时请将舌头自然伸出，对准镜头清晰拍摄。我会分析您的舌象，为您提供中医健康建议哦~',
+    labels: ['自然伸舌', '避免有颜色'],
+    visuals: ['tongue', 'tongue'],
+    provider: '能力由 素灵AI舌诊 提供'
+  }
+};
+
+function chooseMultimodalPreset(card) {
+  const raw = JSON.stringify(card || {});
+  if (/药盒|药品|drug|medicine/.test(raw)) return 'drug';
+  if (/皮肤|患处|skin/.test(raw)) return 'skin';
+  if (/饮食|营养|食物|food|diet/.test(raw)) return 'diet';
+  if (/舌诊|舌象|tongue/.test(raw)) return 'tongue';
+  return 'report';
+}
+
+function renderMultimodalLargeCard(card) {
+  const presetKey = chooseMultimodalPreset(card);
+  const preset = MULTIMODAL_PRESETS[presetKey];
+  const title = card.title || preset.title;
+  const desc = card.desc || card.description || preset.desc;
+  const labels = (card.guide && Array.isArray(card.guide.images) && card.guide.images.length >= 2)
+    ? card.guide.images.slice(0, 2).map(item => item.label)
+    : preset.labels;
+  const visuals = preset.visuals;
+  const cameraIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z"/><circle cx="12" cy="12.5" r="3.5"/></svg>';
+  const imageIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="10" r="1.5"/><path d="M21 16l-5-5L5 19"/></svg>';
+  addTrace('UI_CARD', { cardType: 'multimodal_large', source: 'skill_card_parser', variant: presetKey, title });
+  return `<div class="multimodal-large-card" data-card-name="多模服务大卡" data-variant="${attrEsc(presetKey)}">
+    <div class="mm-guide">
+      <div class="mm-desc">${esc(desc)}</div>
+      <div class="mm-examples">
+        ${labels.map((label, index) => `<div class="mm-example"><div class="mm-label"><span class="mm-check${label.includes('避免') ? ' bad' : ''}">${label.includes('避免') ? '×' : '✓'}</span>${esc(label)}</div><div class="mm-visual ${attrEsc(visuals[index] || visuals[0])}"></div></div>`).join('')}
+      </div>
+      ${preset.provider ? `<div class="mm-provider">◎ ${esc(preset.provider)}</div>` : ''}
+    </div>
+    <div class="mm-actions">
+      <div class="mm-action"><span class="mm-action-icon">${cameraIcon}</span><span class="mm-action-label">拍照</span><button class="mm-action-btn" type="button" onclick="handleMultimodalAction('camera')">去拍照</button></div>
+      <div class="mm-action"><span class="mm-action-icon">${imageIcon}</span><span class="mm-action-label">上传照片</span><button class="mm-action-btn" type="button" onclick="handleMultimodalAction('gallery')">去上传</button></div>
+    </div>
+  </div>`;
+}
+
+function renderFollowupBubblesCard(card) {
+  const bubbles = (card.bubbles || []).map(item => typeof item === 'string' ? { text: item } : item).filter(item => item && item.text);
+  if (!bubbles.length) return '';
+  addTrace('UI_CARD', { cardType: 'followup_bubbles', source: 'skill_card_parser', items: bubbles.map(item => item.text) });
+  return `<div class="service-prompt-list skill-followups">${bubbles.map(item => `<button class="service-prompt-chip" data-prompt="${attrEsc(item.text)}" onclick="handleServicePromptClick(this)"><span>${esc(item.text)}</span></button>`).join('')}</div>`;
+}
+
+function renderSkillCard(card) {
+  if (!card || !card.card_type) return '';
+  if (card.card_type === 'multimodal_large') return renderMultimodalLargeCard(card);
+  if (card.card_type === 'followup_bubbles') return renderFollowupBubblesCard(card);
+  return '';
+}
+
+function handleMultimodalAction(type) {
+  addTrace('A2UI', `Multimodal card action: ${type}`);
+  imageInput.click();
+}
+
+function extractCardBlocks(text) {
+  const cards = [];
+  let value = String(text || '');
+  value = value.replace(/```card\s*([\s\S]*?)\s*```/g, (_, raw) => {
+    try {
+      const card = JSON.parse(raw.trim());
+      cards.push(card);
+      return '';
+    } catch (err) {
+      return '';
+    }
+  });
+  return { text: value.trim(), cards };
 }
 
 const SERVICE_PROMPTS = {
@@ -1111,13 +1332,18 @@ function enrichBotBubble(bubble, sourceText) {
 }
 
 // ─── UI ─────────────────────────────────────────────────────────────────────
-function appendUserMsg(text) {
+function appendUserMsg(text, images = []) {
   const area = document.getElementById('chat-area');
   const sug = document.getElementById('initial-suggestions');
   if (sug) sug.remove();
   const row = document.createElement('div');
   row.className = 'msg-row user';
-  row.innerHTML = `<div class="msg-bubble user">${esc(text)}</div>`;
+  if (images.length) {
+    const imageHtml = `<div class="user-attachment-grid ${images.length === 1 ? 'single' : ''}">${images.map(url => `<div class="user-attachment-card"><img src="${attrEsc(url)}" loading="lazy"/></div>`).join('')}</div>`;
+    row.innerHTML = `<div class="user-message-stack">${imageHtml}<div class="msg-bubble user">${esc(text)}</div></div>`;
+  } else {
+    row.innerHTML = `<div class="msg-bubble user">${esc(text)}</div>`;
+  }
   area.appendChild(row);
   scrollChat();
 }
@@ -1214,8 +1440,11 @@ function updateBotBubble(key, value) {
         hideTyping();
         currentBotBubble = appendBotMsg('');
       }
-      const parsed = extractInlineQuickTests(value);
-      currentBotBubble.innerHTML = typeof marked !== 'undefined' ? marked.parse(parsed.text) : esc(parsed.text);
+      const cardParsed = extractCardBlocks(value);
+      const parsed = extractInlineQuickTests(cardParsed.text);
+      const markdownHtml = typeof marked !== 'undefined' ? marked.parse(parsed.text) : esc(parsed.text);
+      const cardHtml = cardParsed.cards.map(renderSkillCard).join('');
+      currentBotBubble.innerHTML = markdownHtml + cardHtml;
       renderInlineQuickTests(key, parsed.cards);
       scrollChat();
     }
@@ -1255,22 +1484,26 @@ async function consumeSSE(res) {
 
 // ─── Send ───────────────────────────────────────────────────────────────────
 async function sendMessage(text) {
+  return sendMessageWithImages(text, []);
+}
+
+async function sendMessageWithImages(text, images = []) {
   if (!text || isStreaming) return;
   await ensureSession();
-  appendUserMsg(text);
+  appendUserMsg(text, images);
   showTyping();
   currentBotBubble = null;
   isStreaming = true;
   document.getElementById('send-btn').disabled = true;
   beginTraceTurn(text);
-  addTrace('SEND', text);
+  addTrace('SEND', images.length ? { text, images } : text);
 
   abortCtrl = new AbortController();
   try {
     const res = await fetch(`/sessions/${sessionId}/chat`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({message: text}),
+      body: JSON.stringify({message: text, images}),
       signal: abortCtrl.signal,
     });
     if (!res.ok) {

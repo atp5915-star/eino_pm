@@ -19,9 +19,13 @@ package server
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -52,6 +56,7 @@ func init() {
 // is pushed as a ChatItem.
 type ChatItem struct {
 	Query          string                     // user message text (empty for approval items)
+	Images         []msgops.ImageInput        // user-provided images for multimodal turns
 	ApprovalResult *commontool.ApprovalResult // non-nil when this item carries an approval decision
 	InterruptID    string                     // which interrupt this approval resolves
 }
@@ -254,12 +259,95 @@ func (s *Server[M]) Spin() {
 }
 
 type chatRequest struct {
-	Message string `json:"message"`
+	Message string   `json:"message"`
+	Images  []string `json:"images,omitempty"`
 }
 
 type approveRequest struct {
 	Approved bool   `json:"approved"`
 	Reason   string `json:"reason,omitempty"`
+}
+
+func normalizeImageURLs(images []string) []string {
+	if len(images) == 0 {
+		return nil
+	}
+	seen := make(map[string]struct{}, len(images))
+	out := make([]string, 0, len(images))
+	for _, image := range images {
+		image = strings.TrimSpace(image)
+		if image == "" {
+			continue
+		}
+		lower := strings.ToLower(image)
+		if !strings.HasPrefix(lower, "http://") && !strings.HasPrefix(lower, "https://") && !strings.HasPrefix(lower, "data:image/") {
+			continue
+		}
+		if _, ok := seen[image]; ok {
+			continue
+		}
+		seen[image] = struct{}{}
+		out = append(out, image)
+	}
+	return out
+}
+
+func buildImageInputs(ctx context.Context, imageURLs []string) []msgops.ImageInput {
+	inputs := make([]msgops.ImageInput, 0, len(imageURLs))
+	for _, imageURL := range imageURLs {
+		image, err := fetchImageAsBase64(ctx, imageURL)
+		if err != nil {
+			log.Printf("warn: image fetch failed, using url fallback: %v", err)
+			inputs = append(inputs, msgops.ImageInput{URL: imageURL})
+			continue
+		}
+		inputs = append(inputs, image)
+	}
+	return inputs
+}
+
+func fetchImageAsBase64(ctx context.Context, imageURL string) (msgops.ImageInput, error) {
+	if strings.HasPrefix(strings.ToLower(imageURL), "data:image/") {
+		mimeType := strings.TrimPrefix(strings.SplitN(imageURL, ";", 2)[0], "data:")
+		base64Data := imageURL
+		if parts := strings.SplitN(imageURL, ",", 2); len(parts) == 2 {
+			base64Data = parts[1]
+		}
+		return msgops.ImageInput{Base64Data: base64Data, MIMEType: mimeType}, nil
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, imageURL, nil)
+	if err != nil {
+		return msgops.ImageInput{}, err
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return msgops.ImageInput{}, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return msgops.ImageInput{}, fmt.Errorf("image fetch status %d", resp.StatusCode)
+	}
+
+	const maxImageBytes = 8 << 20
+	body, err := io.ReadAll(io.LimitReader(resp.Body, maxImageBytes+1))
+	if err != nil {
+		return msgops.ImageInput{}, err
+	}
+	if len(body) > maxImageBytes {
+		return msgops.ImageInput{}, fmt.Errorf("image too large: %d bytes", len(body))
+	}
+	mimeType := resp.Header.Get("Content-Type")
+	if idx := strings.Index(mimeType, ";"); idx >= 0 {
+		mimeType = strings.TrimSpace(mimeType[:idx])
+	}
+	if mimeType == "" || !strings.HasPrefix(strings.ToLower(mimeType), "image/") {
+		mimeType = http.DetectContentType(body)
+	}
+	if !strings.HasPrefix(strings.ToLower(mimeType), "image/") {
+		return msgops.ImageInput{}, fmt.Errorf("unsupported image mime type %q", mimeType)
+	}
+	return msgops.ImageInput{Base64Data: base64.StdEncoding.EncodeToString(body), MIMEType: mimeType}, nil
 }
 
 func (s *Server[M]) handleRender(_ context.Context, c *app.RequestContext) {
@@ -289,7 +377,9 @@ func (s *Server[M]) handleChat(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	log.Printf("[chat] session=%s msg=%q", id, req.Message)
+	imageURLs := normalizeImageURLs(req.Images)
+	images := buildImageInputs(ctx, imageURLs)
+	log.Printf("[chat] session=%s msg=%q images=%d", id, req.Message, len(images))
 
 	sess, err := s.cfg.Store.GetOrCreate(id)
 	if err != nil {
@@ -297,7 +387,7 @@ func (s *Server[M]) handleChat(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	item := &ChatItem{Query: req.Message}
+	item := &ChatItem{Query: req.Message, Images: images}
 
 	ts := s.getTurnState(id)
 
@@ -609,7 +699,7 @@ func (s *Server[M]) makeGenInput(sess *mem.Session[M], sessionID string) func(ct
 		// Persist the user message NOW — GenInput fires only after any previous
 		// turn's OnAgentEvents has finished persisting its intermediates, so the
 		// session history order is guaranteed correct.
-		userMsg := msgops.NewUser[M](queryItem.Query)
+		userMsg := msgops.NewUserWithImageInputs[M](queryItem.Query, queryItem.Images)
 		if appendErr := sess.Append(userMsg); appendErr != nil {
 			log.Printf("warn: failed to persist user message: %v", appendErr)
 		}

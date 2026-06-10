@@ -1,0 +1,53 @@
+{
+  "description": "追问气泡 mock — 每轮回答末尾推 3 条（深度解读 / 就诊路径 / 生活方式）",
+  "variants": [
+    {
+      "id": "no_intent_default",
+      "trigger_hint": "全报告解读场景",
+      "data": {
+        "card_type": "followup_bubbles",
+        "bubbles": [
+          {"icon": null, "text": "这份报告里哪一项最值得我重点关注？", "action": {"type": "query"}},
+          {"icon": null, "text": "我应该挂哪个科？什么时候去？", "action": {"type": "query"}},
+          {"icon": "doctor", "text": "我要在线咨询真人医生", "action": {"type": "service", "url": "#mock"}}
+        ]
+      }
+    },
+    {
+      "id": "diagnosis_default",
+      "trigger_hint": "判断/鉴别场景",
+      "data": {
+        "card_type": "followup_bubbles",
+        "bubbles": [
+          {"icon": null, "text": "确诊还需要做哪些检查？", "action": {"type": "query"}},
+          {"icon": null, "text": "鉴别诊断里哪种最常见？", "action": {"type": "query"}},
+          {"icon": "doctor", "text": "我要问对应专科医生", "action": {"type": "service", "url": "#mock"}}
+        ]
+      }
+    },
+    {
+      "id": "judgment_default",
+      "trigger_hint": "严重度研判场景",
+      "data": {
+        "card_type": "followup_bubbles",
+        "bubbles": [
+          {"icon": null, "text": "多久复查一次合适？", "action": {"type": "query"}},
+          {"icon": null, "text": "什么情况下要立即就医？", "action": {"type": "query"}},
+          {"icon": null, "text": "日常生活上要注意什么？", "action": {"type": "query"}}
+        ]
+      }
+    },
+    {
+      "id": "treatment_default",
+      "trigger_hint": "处置建议场景",
+      "data": {
+        "card_type": "followup_bubbles",
+        "bubbles": [
+          {"icon": null, "text": "推荐的药物有什么副作用？", "action": {"type": "query"}},
+          {"icon": null, "text": "治疗期间饮食/运动怎么安排？", "action": {"type": "query"}},
+          {"icon": "doctor", "text": "我要问主诊医生", "action": {"type": "service", "url": "#mock"}}
+        ]
+      }
+    }
+  ]
+}
