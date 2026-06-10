@@ -27,6 +27,8 @@ type Message struct {
 	DataModelUpdate  *DataModelUpdateMsg  `json:"dataModelUpdate,omitempty"`
 	DeleteSurface    *DeleteSurfaceMsg    `json:"deleteSurface,omitempty"`
 	InterruptRequest *InterruptRequestMsg `json:"interruptRequest,omitempty"`
+	AgentTrace       *AgentTraceMsg       `json:"agentTrace,omitempty"`
+	QuickTest        *QuickTestMsg        `json:"quickTest,omitempty"`
 }
 
 // BeginRenderingMsg signals the start of a rendering session for a surface.
@@ -99,6 +101,23 @@ type DataContent struct {
 type InterruptRequestMsg struct {
 	InterruptID string `json:"interruptId"`
 	Description string `json:"description"` // human-readable reason (from the interrupt's Info)
+}
+
+// AgentTraceMsg exposes agent-loop progress to the debug panel without changing chat UI rendering.
+type AgentTraceMsg struct {
+	Stage   string         `json:"stage"`
+	Label   string         `json:"label"`
+	Details map[string]any `json:"details,omitempty"`
+}
+
+// QuickTestMsg renders a structured quick-test card parsed from skill output tags.
+type QuickTestMsg struct {
+	SurfaceID   string   `json:"surfaceId"`
+	Title       string   `json:"title"`
+	SelectType  string   `json:"selectType"`
+	Options     []string `json:"options,omitempty"`
+	ImagePrompt string   `json:"imagePrompt,omitempty"`
+	InputOption bool     `json:"inputOption,omitempty"`
 }
 
 // Encode serializes a Message to JSON followed by a newline byte.

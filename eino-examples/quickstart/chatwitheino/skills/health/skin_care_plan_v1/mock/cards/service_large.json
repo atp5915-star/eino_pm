@@ -1,0 +1,43 @@
+{
+  "description": "皮肤科分级医疗服务大卡 mock 数据",
+  "variants": [
+    {
+      "id": "dermatology_service_options",
+      "trigger_hint": "用户明确想找皮肤科医生或需要分级服务承接",
+      "data": {
+        "card_type": "service_large",
+        "header": {
+          "badge": "需要再确认时",
+          "stats": "可带症状和照片问皮肤科医生"
+        },
+        "sections": [
+          {
+            "title": "快速咨询",
+            "items": [
+              {
+                "name": "问皮肤科医生",
+                "tags": ["可传照片"],
+                "subtitle": "适合想确认诊断、用药是否合适、需不需要面诊的情况",
+                "price": {"current": 0, "original": null},
+                "action": {"label": "去咨询", "url": "#mock-skin-consult"}
+              }
+            ]
+          },
+          {
+            "title": "线下就医",
+            "items": [
+              {
+                "name": "线下皮肤科",
+                "tags": ["需医生面诊"],
+                "subtitle": "适合快速扩散、疼痛明显、反复不好或需要检查的情况",
+                "price": {"current": null, "original": null},
+                "action": {"label": "查医院", "url": "#mock-find-hospital"}
+              }
+            ]
+          }
+        ],
+        "footer": {"label": "查看更多皮肤科服务", "url": "#mock-more-skin-services"}
+      }
+    }
+  ]
+}

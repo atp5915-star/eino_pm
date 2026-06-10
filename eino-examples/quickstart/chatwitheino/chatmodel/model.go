@@ -66,6 +66,13 @@ func newChatModel(ctx context.Context) (einomodel.ToolCallingChatModel, error) {
 			},
 		})
 	}
+	if modelType == "messages" || modelType == "oneapi_messages" {
+		return newMessagesModel(
+			os.Getenv("OPENAI_API_KEY"),
+			firstEnv("MESSAGES_MODEL", "OPENAI_MODEL", "OPENAI_MODEL_ID"),
+			firstEnv("MESSAGES_BASE_URL", "OPENAI_BASE_URL"),
+		), nil
+	}
 
 	return openai.NewChatModel(ctx, &openai.ChatModelConfig{
 		APIKey:  os.Getenv("OPENAI_API_KEY"),

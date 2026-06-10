@@ -1,0 +1,23 @@
+{
+  "description": "皮肤诊断首轮照片引导 mock 数据",
+  "variants": [
+    {
+      "id": "skin_photo_guide_general",
+      "trigger_hint": "需要查看皮损形态、分布、边界或颜色时",
+      "data": {
+        "card_type": "multimodal_large",
+        "guide": {
+          "images": [
+            {"label": "光线充足", "url": "mock/skin_photo_light.png"},
+            {"label": "包含周围皮肤", "url": "mock/skin_photo_context.png"},
+            {"label": "避免美颜滤镜", "url": "mock/skin_photo_no_filter.png"}
+          ]
+        },
+        "actions": [
+          {"icon": "camera", "label": "现在拍一张", "action": {"type": "camera", "label": "现在拍一张"}},
+          {"icon": "gallery", "label": "选已有照片", "action": {"type": "gallery", "label": "选已有照片"}}
+        ]
+      }
+    }
+  ]
+}

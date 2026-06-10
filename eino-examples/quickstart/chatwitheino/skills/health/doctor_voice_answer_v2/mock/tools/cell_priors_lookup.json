@@ -1,0 +1,1408 @@
+{
+  "description": "格子级维度先验查询 mock —— 51 个 n≥3 格子有人工标注先验，未命中返回 null（SKILL 走通用规则）",
+  "scenarios": [
+    {
+      "match": {
+        "topic_code": "T4",
+        "intent_code": "I3"
+      },
+      "response": {
+        "must": [
+          "cause",
+          "differential_dx",
+          "red_flag",
+          "dept_recommend"
+        ],
+        "plus": [
+          "definition",
+          "symptom_list",
+          "treatment_tier",
+          "self_check",
+          "lifestyle_advice",
+          "subgroup_hint",
+          "personalization_q",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "检查/诊断方法建议",
+          "症状严重程度或紧急性初步判断"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T4",
+        "intent_code": "I2"
+      },
+      "response": {
+        "must": [
+          "symptom_list",
+          "differential_dx",
+          "red_flag",
+          "dept_recommend",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "definition",
+          "cause",
+          "treatment_tier",
+          "self_check",
+          "subgroup_hint",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "症状的急慢性区分与病程描述",
+          "症状严重程度分级及对应处理建议"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T20",
+        "intent_code": "I12"
+      },
+      "response": {
+        "must": [
+          "contraindication",
+          "tcm_dialectical",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "definition",
+          "cause",
+          "dose_specifics",
+          "lifestyle_advice",
+          "subgroup_hint",
+          "personalization_q",
+          "structured_fmt"
+        ],
+        "gaps": [
+          "明确列出具体功效/作用（如温中散寒、止痛等）",
+          "给出搭配/配伍建议（如与什么一起泡水效果更好）"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T4",
+        "intent_code": "I5"
+      },
+      "response": {
+        "must": [
+          "treatment_tier",
+          "red_flag",
+          "dept_recommend",
+          "differential_dx"
+        ],
+        "plus": [
+          "cause",
+          "lifestyle_advice",
+          "self_check",
+          "personalization_q",
+          "empathy_tone",
+          "subgroup_hint",
+          "dose_specifics",
+          "contraindication",
+          "followup_mgmt",
+          "structured_fmt"
+        ],
+        "gaps": [
+          "建议相关检查或诊断方法"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T5",
+        "intent_code": "I6"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "contraindication",
+          "subgroup_hint"
+        ],
+        "plus": [
+          "red_flag",
+          "dept_recommend",
+          "lifestyle_advice",
+          "dose_specifics",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "提供具体的临床指标控制目标或临界值（如血糖、血压、心功能指标等）",
+          "明确区分绝对禁忌与相对禁忌，并给出相应条件性建议"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T5",
+        "intent_code": "I5"
+      },
+      "response": {
+        "must": [
+          "definition",
+          "cause",
+          "treatment_tier",
+          "contraindication",
+          "lifestyle_advice",
+          "dept_recommend",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "symptom_list",
+          "dose_specifics",
+          "red_flag",
+          "self_check",
+          "subgroup_hint",
+          "followup_mgmt",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "治疗周期/预期恢复时间",
+          "是否需要进一步检查（如影像学）的指征"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T9",
+        "intent_code": "I12"
+      },
+      "response": {
+        "must": [
+          "contraindication",
+          "lifestyle_advice",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "definition",
+          "dose_specifics",
+          "subgroup_hint",
+          "tcm_dialectical",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "营养成分含量（如每100g含有的具体营养素数值）",
+          "食物间的相互作用（相克/相宜，以及功效协同或抵消）"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T4",
+        "intent_code": "I1"
+      },
+      "response": {
+        "must": [
+          "definition",
+          "differential_dx",
+          "red_flag",
+          "empathy_tone",
+          "dept_recommend"
+        ],
+        "plus": [
+          "cause",
+          "symptom_list",
+          "self_check",
+          "subgroup_hint",
+          "personalization_q",
+          "structured_fmt",
+          "decisive_judgment"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T5",
+        "intent_code": "I10"
+      },
+      "response": {
+        "must": [
+          "definition",
+          "treatment_tier",
+          "red_flag",
+          "followup_mgmt",
+          "personalization_q",
+          "decisive_judgment",
+          "value_interpret"
+        ],
+        "plus": [
+          "cause",
+          "symptom_list",
+          "contraindication",
+          "self_check",
+          "lifestyle_advice",
+          "subgroup_hint",
+          "empathy_tone",
+          "structured_fmt",
+          "dept_recommend"
+        ],
+        "gaps": [
+          "疾病亚型/分型对预后的具体影响",
+          "复发风险评估及高危因素",
+          "自愈可能性及条件（如时间、症状限制）",
+          "自然病程/生存率/治愈率等量化数据",
+          "是否具有传染性及预防措施"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T9",
+        "intent_code": "I6"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "contraindication",
+          "subgroup_hint"
+        ],
+        "plus": [
+          "cause",
+          "red_flag",
+          "lifestyle_advice",
+          "tcm_dialectical",
+          "dept_recommend"
+        ],
+        "gaps": [
+          "食物营养成分（如热量、糖分、钾、磷等）对特定疾病（如糖尿病、肾病）的具体影响数据",
+          "食品安全与毒性评估（如霉菌毒素、农药残留、中毒机制）的系统说明"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T5",
+        "intent_code": "I3"
+      },
+      "response": {
+        "must": [
+          "cause",
+          "differential_dx",
+          "red_flag",
+          "dept_recommend",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "definition",
+          "symptom_list",
+          "treatment_tier",
+          "self_check",
+          "lifestyle_advice",
+          "subgroup_hint",
+          "tcm_dialectical",
+          "value_interpret",
+          "followup_mgmt",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T3",
+        "intent_code": "I7"
+      },
+      "response": {
+        "must": [
+          "dose_specifics",
+          "subgroup_hint",
+          "contraindication",
+          "tcm_dialectical"
+        ],
+        "plus": [
+          "red_flag",
+          "self_check",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "lifestyle_advice"
+        ],
+        "gaps": [
+          "强调儿童用药必须在医师或药师指导下进行",
+          "提供按体重或年龄的剂量换算依据",
+          "说明服用时间（如饭后）及伴随注意事项"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T18",
+        "intent_code": "I1"
+      },
+      "response": {
+        "must": [
+          "definition"
+        ],
+        "plus": [
+          "cause",
+          "symptom_list",
+          "red_flag",
+          "subgroup_hint",
+          "dept_recommend",
+          "structured_fmt",
+          "empathy_tone",
+          "treatment_tier"
+        ],
+        "gaps": [
+          "预防措施（如手卫生、隔离消毒）",
+          "病原体的耐药性特点"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T0",
+        "intent_code": "I11"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment"
+        ],
+        "plus": [
+          "definition",
+          "contraindication",
+          "subgroup_hint",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "真实性验证方法或官方来源引用",
+          "产品详细保障内容（保额、保障范围、等待期等）",
+          "与医保相关的说明",
+          "购买注意事项（如健康告知、免责条款等）"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T5",
+        "intent_code": "I4"
+      },
+      "response": {
+        "must": [
+          "definition",
+          "differential_dx",
+          "red_flag",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "cause",
+          "symptom_list",
+          "treatment_tier",
+          "self_check",
+          "lifestyle_advice",
+          "subgroup_hint",
+          "value_interpret",
+          "followup_mgmt",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "建议就诊科室",
+          "建议进一步检查",
+          "预后/风险告知"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T21",
+        "intent_code": "I5"
+      },
+      "response": {
+        "must": [
+          "value_interpret",
+          "treatment_tier",
+          "contraindication",
+          "red_flag",
+          "subgroup_hint",
+          "dept_recommend",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "dose_specifics",
+          "differential_dx",
+          "lifestyle_advice",
+          "structured_fmt",
+          "empathy_tone",
+          "personalization_q",
+          "followup_mgmt"
+        ],
+        "gaps": [
+          "建议进一步检查以明确贫血类型（如血清铁、铁蛋白、叶酸、维生素B12等）",
+          "警告不要自行用药，需在医生指导下使用"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T1",
+        "intent_code": "I1"
+      },
+      "response": {
+        "must": [
+          "definition"
+        ],
+        "plus": [
+          "value_interpret",
+          "subgroup_hint",
+          "structured_fmt"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T2",
+        "intent_code": "I5"
+      },
+      "response": {
+        "must": [
+          "treatment_tier",
+          "lifestyle_advice",
+          "contraindication"
+        ],
+        "plus": [
+          "cause",
+          "red_flag",
+          "self_check",
+          "subgroup_hint",
+          "followup_mgmt",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend",
+          "decisive_judgment"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T21",
+        "intent_code": "I4"
+      },
+      "response": {
+        "must": [
+          "value_interpret",
+          "red_flag",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "definition",
+          "cause",
+          "differential_dx",
+          "treatment_tier",
+          "subgroup_hint",
+          "self_check",
+          "followup_mgmt",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T6",
+        "intent_code": "I4"
+      },
+      "response": {
+        "must": [
+          "definition",
+          "red_flag",
+          "value_interpret",
+          "dept_recommend",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "cause",
+          "treatment_tier",
+          "contraindication",
+          "self_check",
+          "lifestyle_advice",
+          "subgroup_hint",
+          "followup_mgmt",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "区分孕周/孕期阶段对评估的影响"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T4",
+        "intent_code": "I6"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "contraindication",
+          "red_flag",
+          "differential_dx",
+          "subgroup_hint",
+          "cause"
+        ],
+        "plus": [
+          "dept_recommend",
+          "lifestyle_advice",
+          "self_check",
+          "personalization_q",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "提供科学依据或文献引用",
+          "提供更优的替代方案"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T0",
+        "intent_code": "I1"
+      },
+      "response": {
+        "must": [
+          "definition"
+        ],
+        "plus": [
+          "structured_fmt",
+          "differential_dx",
+          "dept_recommend"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T9",
+        "intent_code": "I8"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "cause",
+          "lifestyle_advice"
+        ],
+        "plus": [
+          "dose_specifics",
+          "subgroup_hint",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "self_check"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T19",
+        "intent_code": "I10"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "red_flag",
+          "followup_mgmt",
+          "contraindication"
+        ],
+        "plus": [
+          "lifestyle_advice",
+          "subgroup_hint",
+          "self_check",
+          "dose_specifics",
+          "treatment_tier",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend"
+        ],
+        "gaps": [
+          "恢复时间线/分期（如术后不同阶段的预期进展）",
+          "康复训练具体方案（如动作、频率、强度）",
+          "影响恢复速度的因素（年龄、手术方式、损伤程度等）"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T6",
+        "intent_code": "I2"
+      },
+      "response": {
+        "must": [
+          "definition",
+          "cause",
+          "symptom_list",
+          "differential_dx",
+          "red_flag",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "treatment_tier",
+          "lifestyle_advice",
+          "self_check",
+          "subgroup_hint",
+          "empathy_tone",
+          "structured_fmt",
+          "dept_recommend",
+          "personalization_q",
+          "followup_mgmt"
+        ],
+        "gaps": [
+          "区分自然绝经与手术/药物导致的绝经",
+          "恶心的特点（如与月经周期的时间关系、严重程度）",
+          "绝经分期（围绝经期/绝经后期）对症状表现的影响"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T7",
+        "intent_code": "I4"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "red_flag",
+          "definition",
+          "symptom_list",
+          "subgroup_hint"
+        ],
+        "plus": [
+          "differential_dx",
+          "value_interpret",
+          "followup_mgmt",
+          "self_check",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend",
+          "cause"
+        ],
+        "gaps": [
+          "提供针对儿童年龄的正常生理参数范围（如发育里程碑、症状频率正常值）",
+          "建议必要的检查或检验以明确诊断"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T19",
+        "intent_code": "I6"
+      },
+      "response": {
+        "must": [
+          "contraindication",
+          "lifestyle_advice",
+          "subgroup_hint",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "definition",
+          "red_flag",
+          "followup_mgmt",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend",
+          "treatment_tier"
+        ],
+        "gaps": [
+          "手术必要性与风险收益权衡",
+          "替代治疗方案",
+          "术前准备与注意事项"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T19",
+        "intent_code": "I4"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "red_flag",
+          "cause",
+          "treatment_tier",
+          "dept_recommend",
+          "differential_dx"
+        ],
+        "plus": [
+          "self_check",
+          "followup_mgmt",
+          "personalization_q",
+          "empathy_tone",
+          "structured_fmt",
+          "lifestyle_advice",
+          "subgroup_hint",
+          "definition"
+        ],
+        "gaps": [
+          "区分假牙类型（活动/固定/种植）",
+          "给出正常缝隙的量化参考范围",
+          "考虑术后时间因素（刚完成还是长期使用）",
+          "提供临时自我护理建议（如避免咀嚼、清洁注意事项）"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T5",
+        "intent_code": "I2"
+      },
+      "response": {
+        "must": [
+          "definition",
+          "symptom_list",
+          "red_flag",
+          "dept_recommend"
+        ],
+        "plus": [
+          "cause",
+          "differential_dx",
+          "self_check",
+          "subgroup_hint",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "症状的诱发或加重因素",
+          "症状的持续时间/发作频率与周期",
+          "症状的个体差异或典型与非典型表现区分"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T9",
+        "intent_code": "I5"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "contraindication",
+          "red_flag",
+          "dept_recommend",
+          "tcm_dialectical",
+          "treatment_tier",
+          "lifestyle_advice",
+          "subgroup_hint"
+        ],
+        "plus": [
+          "definition",
+          "cause",
+          "symptom_list",
+          "self_check",
+          "dose_specifics",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T5",
+        "intent_code": "I13"
+      },
+      "response": {
+        "must": [
+          "differential_dx",
+          "value_interpret",
+          "dept_recommend"
+        ],
+        "plus": [
+          "definition",
+          "symptom_list",
+          "contraindication",
+          "red_flag",
+          "subgroup_hint",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "具体的诊断标准或诊断依据（如临床标准、基因突变列表）",
+          "不同检查方法的选择顺序与优先级建议"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T5",
+        "intent_code": "I1"
+      },
+      "response": {
+        "must": [
+          "definition",
+          "cause",
+          "symptom_list"
+        ],
+        "plus": [
+          "differential_dx",
+          "treatment_tier",
+          "red_flag",
+          "subgroup_hint",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend"
+        ],
+        "gaps": [
+          "疾病分型/分期/亚型",
+          "预后/转归",
+          "传染性/遗传性",
+          "常见并发症"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T2",
+        "intent_code": "I8"
+      },
+      "response": {
+        "must": [
+          "cause",
+          "differential_dx",
+          "treatment_tier",
+          "red_flag",
+          "dept_recommend",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "definition",
+          "symptom_list",
+          "dose_specifics",
+          "contraindication",
+          "self_check",
+          "lifestyle_advice",
+          "subgroup_hint",
+          "followup_mgmt",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T21",
+        "intent_code": "I3"
+      },
+      "response": {
+        "must": [
+          "definition",
+          "cause",
+          "differential_dx",
+          "subgroup_hint",
+          "value_interpret"
+        ],
+        "plus": [
+          "symptom_list",
+          "treatment_tier",
+          "red_flag",
+          "lifestyle_advice",
+          "followup_mgmt",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T6",
+        "intent_code": "I3"
+      },
+      "response": {
+        "must": [
+          "cause",
+          "differential_dx",
+          "red_flag",
+          "lifestyle_advice"
+        ],
+        "plus": [
+          "treatment_tier",
+          "symptom_list",
+          "personalization_q",
+          "empathy_tone",
+          "dept_recommend"
+        ],
+        "gaps": [
+          "建议的检查项目（如血常规、血糖、心电图等）",
+          "晕倒时的应急处理步骤"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T4",
+        "intent_code": "I4"
+      },
+      "response": {
+        "must": [
+          "red_flag",
+          "decisive_judgment",
+          "dept_recommend",
+          "differential_dx"
+        ],
+        "plus": [
+          "cause",
+          "self_check",
+          "empathy_tone",
+          "structured_fmt",
+          "personalization_q",
+          "subgroup_hint",
+          "lifestyle_advice",
+          "symptom_list",
+          "treatment_tier",
+          "followup_mgmt",
+          "definition"
+        ],
+        "gaps": [
+          "建议进行的具体检查项目（如血液检测、影像学检查等）"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T21",
+        "intent_code": "I1"
+      },
+      "response": {
+        "must": [
+          "definition",
+          "cause",
+          "differential_dx",
+          "value_interpret",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "symptom_list",
+          "red_flag",
+          "subgroup_hint",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T6",
+        "intent_code": "I6"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "contraindication",
+          "subgroup_hint",
+          "red_flag",
+          "treatment_tier"
+        ],
+        "plus": [
+          "empathy_tone",
+          "structured_fmt",
+          "self_check",
+          "lifestyle_advice",
+          "dept_recommend",
+          "cause",
+          "personalization_q"
+        ],
+        "gaps": [
+          "具体药物成分/品牌及孕期安全性分级（如FDA类别）",
+          "按孕早期/中期/晚期给出差异化建议"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T10",
+        "intent_code": "I5"
+      },
+      "response": {
+        "must": [
+          "tcm_dialectical",
+          "treatment_tier",
+          "contraindication",
+          "red_flag",
+          "lifestyle_advice"
+        ],
+        "plus": [
+          "cause",
+          "self_check",
+          "subgroup_hint",
+          "dose_specifics",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend",
+          "followup_mgmt"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T11",
+        "intent_code": "I10"
+      },
+      "response": {
+        "must": [
+          "cause",
+          "treatment_tier",
+          "red_flag",
+          "decisive_judgment",
+          "dept_recommend"
+        ],
+        "plus": [
+          "self_check",
+          "lifestyle_advice",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "contraindication"
+        ],
+        "gaps": [
+          "预后时间估计（如淤血吸收周期、指甲是否可能脱落）",
+          "具体家庭护理操作步骤（如冷敷、抬高、止痛药选择）"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T2",
+        "intent_code": "I9"
+      },
+      "response": {
+        "must": [
+          "subgroup_hint",
+          "personalization_q",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "definition",
+          "cause",
+          "treatment_tier",
+          "dose_specifics",
+          "contraindication",
+          "red_flag",
+          "value_interpret",
+          "followup_mgmt",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend"
+        ],
+        "gaps": [
+          "药物疗效的对比分析（如临床研究数据）",
+          "药物副作用/不良反应的对比信息"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T3",
+        "intent_code": "I6"
+      },
+      "response": {
+        "must": [
+          "differential_dx",
+          "contraindication",
+          "tcm_dialectical",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "definition",
+          "symptom_list",
+          "self_check",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T8",
+        "intent_code": "I8"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "empathy_tone",
+          "lifestyle_advice"
+        ],
+        "plus": [
+          "red_flag",
+          "self_check",
+          "subgroup_hint",
+          "personalization_q",
+          "structured_fmt",
+          "dept_recommend"
+        ],
+        "gaps": [
+          "纠正常见误区（例如手淫导致不孕、肾虚、阴道松弛等）",
+          "提供科学依据或权威观点（如WHO或性学会的立场）"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T2",
+        "intent_code": "I6"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "dose_specifics",
+          "contraindication"
+        ],
+        "plus": [
+          "cause",
+          "treatment_tier",
+          "red_flag",
+          "lifestyle_advice",
+          "subgroup_hint",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend"
+        ],
+        "gaps": [
+          "evidence_level: 给出证据等级或研究支持情况"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T16",
+        "intent_code": "I12"
+      },
+      "response": {
+        "must": [
+          "definition",
+          "dose_specifics",
+          "contraindication",
+          "subgroup_hint",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "cause",
+          "symptom_list",
+          "red_flag",
+          "lifestyle_advice",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "区分具体维生素亚型/种类",
+          "科学证据等级或共识程度"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T12",
+        "intent_code": "I3"
+      },
+      "response": {
+        "must": [
+          "cause",
+          "differential_dx",
+          "empathy_tone",
+          "personalization_q",
+          "dept_recommend"
+        ],
+        "plus": [
+          "definition",
+          "symptom_list",
+          "treatment_tier",
+          "red_flag",
+          "self_check",
+          "lifestyle_advice",
+          "followup_mgmt",
+          "structured_fmt"
+        ],
+        "gaps": [
+          "建议进行专业心理评估或学习能力测试的具体步骤和工具",
+          "提供与孩子沟通、建立积极学习环境的策略"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T16",
+        "intent_code": "I8"
+      },
+      "response": {
+        "must": [
+          "symptom_list",
+          "contraindication",
+          "red_flag",
+          "subgroup_hint",
+          "treatment_tier"
+        ],
+        "plus": [
+          "definition",
+          "cause",
+          "dose_specifics",
+          "self_check",
+          "followup_mgmt",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend"
+        ],
+        "gaps": [
+          "副作用的严重程度等级划分",
+          "副作用的发生频率或常见性",
+          "基于科学研究的证据支撑"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T8",
+        "intent_code": "I6"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "contraindication",
+          "cause"
+        ],
+        "plus": [
+          "definition",
+          "red_flag",
+          "lifestyle_advice",
+          "subgroup_hint",
+          "followup_mgmt",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone",
+          "dept_recommend",
+          "treatment_tier"
+        ],
+        "gaps": [
+          "性伴侣的筛查与治疗建议",
+          "区分首次发作与复发的不同处理建议"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T0",
+        "intent_code": "I14"
+      },
+      "response": {
+        "must": [
+          "dept_recommend",
+          "personalization_q"
+        ],
+        "plus": [
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "免费医疗资源或渠道推荐",
+          "挂号流程与注意事项"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T18",
+        "intent_code": "I4"
+      },
+      "response": {
+        "must": [
+          "decisive_judgment",
+          "value_interpret",
+          "dept_recommend",
+          "followup_mgmt"
+        ],
+        "plus": [
+          "definition",
+          "red_flag",
+          "empathy_tone",
+          "personalization_q",
+          "structured_fmt",
+          "subgroup_hint",
+          "cause"
+        ],
+        "gaps": []
+      }
+    },
+    {
+      "match": {
+        "topic_code": "T3",
+        "intent_code": "I12"
+      },
+      "response": {
+        "must": [
+          "definition",
+          "symptom_list",
+          "tcm_dialectical",
+          "contraindication",
+          "decisive_judgment"
+        ],
+        "plus": [
+          "dose_specifics",
+          "subgroup_hint",
+          "lifestyle_advice",
+          "red_flag",
+          "cause",
+          "personalization_q",
+          "structured_fmt",
+          "empathy_tone"
+        ],
+        "gaps": [
+          "药物成分组成",
+          "中医术语解释（如升阳的含义）"
+        ]
+      }
+    },
+    {
+      "match": {
+        "topic_code": "*",
+        "intent_code": "*"
+      },
+      "response": null
+    }
+  ]
+}

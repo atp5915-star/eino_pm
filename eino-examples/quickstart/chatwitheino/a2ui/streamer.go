@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
+	"regexp"
 	"strings"
 
 	"github.com/cloudwego/eino/adk"
@@ -95,6 +97,13 @@ func streamEvents[M adk.MessageType](w io.Writer, surfaceID string, rootChildren
 	var lastContent strings.Builder
 	var interruptID string
 	var intermediates []M
+	iteration := 0
+
+	_ = emitAgentTrace(w, "loop_start", "Agent loop started", map[string]any{
+		"surfaceId": surfaceID,
+		"model":     activeModelName(),
+		"modelType": activeModelType(),
+	})
 
 	// writerBroken is set when SSE writes fail (e.g. browser aborted the
 	// fetch during a preempt). When true we stop writing to the UI but keep
@@ -113,12 +122,14 @@ func streamEvents[M adk.MessageType](w io.Writer, surfaceID string, rootChildren
 			if helpers.IsModelRetryInProgress(event.Err) {
 				log.Printf("[a2ui] model retry: %v", event.Err)
 				if !writerBroken {
+					_ = emitAgentTrace(w, "model_retry", "Model retry in progress", map[string]any{"error": event.Err.Error()})
 					_ = emitToolChip(w, surfaceID, rootChildren, msgIdx, "retrying", event.Err.Error())
 				}
 				continue
 			}
 			log.Printf("[a2ui] event error: %v", event.Err)
 			if !writerBroken {
+				_ = emitAgentTrace(w, "error", "Agent event error", map[string]any{"error": event.Err.Error()})
 				_ = emitToolChip(w, surfaceID, rootChildren, msgIdx, "error", event.Err.Error())
 			}
 			return lastContent.String(), intermediates, "", event.Err
@@ -141,6 +152,7 @@ func streamEvents[M adk.MessageType](w io.Writer, surfaceID string, rootChildren
 			}
 			log.Printf("[a2ui] interrupt: id=%s desc=%q", interruptID, desc)
 			if !writerBroken {
+				_ = emitAgentTrace(w, "interrupt", "Agent interrupted for approval", map[string]any{"interruptId": interruptID, "description": desc})
 				_ = emitToolChip(w, surfaceID, rootChildren, msgIdx, "approval needed", desc)
 				_ = emit(w, Message{
 					InterruptRequest: &InterruptRequestMsg{
@@ -159,19 +171,40 @@ func streamEvents[M adk.MessageType](w io.Writer, surfaceID string, rootChildren
 		if !hasOutput {
 			if hasExit {
 				log.Printf("[a2ui] exit (no output)")
+				if !writerBroken {
+					_ = emitAgentTrace(w, "loop_exit", "Agent loop exited", map[string]any{"iteration": iteration})
+				}
 				break
 			}
 			continue
 		}
 
+		iteration++
 		mo := event.Output.MessageOutput
+		roleLabel := msgops.VariantRoleLabel(mo)
 		log.Printf("[a2ui] message output: role=%q isStreaming=%v hasStream=%v hasMessage=%v",
-			msgops.VariantRoleLabel(mo), mo.IsStreaming, mo.MessageStream != nil, !msgops.IsNil(mo.Message))
+			roleLabel, mo.IsStreaming, mo.MessageStream != nil, !msgops.IsNil(mo.Message))
+		if !writerBroken {
+			_ = emitAgentTrace(w, "agent_event", "Agent event received", map[string]any{
+				"iteration":  iteration,
+				"role":       roleLabel,
+				"streaming":  mo.IsStreaming,
+				"hasStream":  mo.MessageStream != nil,
+				"hasMessage": !msgops.IsNil(mo.Message),
+			})
+		}
 
 		if msgops.VariantIsToolResult(mo) {
 			content, toolCallID, toolName := msgops.DrainToolResult(mo)
 			log.Printf("[a2ui] tool result (%d chars): %.200s", len(content), content)
 			if !writerBroken {
+				_ = emitAgentTrace(w, "tool_result", "Tool result received", map[string]any{
+					"iteration":  iteration,
+					"tool":       toolName,
+					"toolCallId": toolCallID,
+					"chars":      len(content),
+					"preview":    truncateRunes(content, 220),
+				})
 				_ = emitToolChip(w, surfaceID, rootChildren, msgIdx, "tool result", content)
 			}
 			intermediates = append(intermediates, msgops.NewToolResult[M](toolCallID, toolName, content))
@@ -287,6 +320,12 @@ func streamEvents[M adk.MessageType](w io.Writer, surfaceID string, rootChildren
 			if !writerBroken {
 				for _, tc := range toolCalls {
 					log.Printf("[a2ui] tool call: %s args=%s", tc.Name, tc.Args)
+					_ = emitAgentTrace(w, "tool_call", "Tool call requested", map[string]any{
+						"iteration":  iteration,
+						"tool":       tc.Name,
+						"toolCallId": tc.ID,
+						"args":       truncateRunes(tc.Args, 500),
+					})
 					_ = emitToolChip(w, surfaceID, rootChildren, msgIdx, "tool call", formatToolCall(tc))
 				}
 			}
@@ -313,6 +352,12 @@ func streamEvents[M adk.MessageType](w io.Writer, surfaceID string, rootChildren
 			if !writerBroken {
 				for _, tc := range toolCalls {
 					log.Printf("[a2ui] tool call: %s args=%s", tc.Name, tc.Args)
+					_ = emitAgentTrace(w, "tool_call", "Tool call requested", map[string]any{
+						"iteration":  iteration,
+						"tool":       tc.Name,
+						"toolCallId": tc.ID,
+						"args":       truncateRunes(tc.Args, 500),
+					})
 					_ = emitToolChip(w, surfaceID, rootChildren, msgIdx, "tool call", formatToolCall(tc))
 				}
 				if content != "" {
@@ -335,6 +380,9 @@ func streamEvents[M adk.MessageType](w io.Writer, surfaceID string, rootChildren
 
 		if hasExit {
 			log.Printf("[a2ui] exit (after output)")
+			if !writerBroken {
+				_ = emitAgentTrace(w, "loop_exit", "Agent loop exited", map[string]any{"iteration": iteration})
+			}
 			break
 		}
 	}
@@ -346,31 +394,160 @@ func streamEvents[M adk.MessageType](w io.Writer, surfaceID string, rootChildren
 func formatToolCall(tc msgops.ToolCall) string {
 	text := "🔧 " + tc.Name
 	if tc.Args != "" {
-		args := tc.Args
-		if len([]rune(args)) > 400 {
-			args = string([]rune(args)[:400]) + "…"
-		}
-		text += "\n" + args
+		text += "\n" + truncateRunes(tc.Args, 400)
 	}
 	return text
 }
 
+func truncateRunes(text string, limit int) string {
+	if limit <= 0 {
+		return ""
+	}
+	runes := []rune(text)
+	if len(runes) <= limit {
+		return text
+	}
+	return string(runes[:limit]) + "…"
+}
+
+func activeModelName() string {
+	for _, key := range []string{"MESSAGES_MODEL", "OPENAI_MODEL", "OPENAI_MODEL_ID", "ARK_MODEL", "ARK_MODEL_ID"} {
+		if value := strings.TrimSpace(os.Getenv(key)); value != "" {
+			return value
+		}
+	}
+	return ""
+}
+
+func activeModelType() string {
+	if value := strings.TrimSpace(os.Getenv("MODEL_TYPE")); value != "" {
+		return value
+	}
+	return "chat_completions"
+}
+
+func emitAgentTrace(w io.Writer, stage, label string, details map[string]any) error {
+	return emit(w, Message{
+		AgentTrace: &AgentTraceMsg{
+			Stage:   stage,
+			Label:   label,
+			Details: details,
+		},
+	})
+}
+
 // emitTextCard emits a text card with full content (non-streaming path).
 func emitTextCard(w io.Writer, surfaceID string, rootChildren *[]string, msgIdx *int, roleLabel, content string) error {
-	idx := *msgIdx
-	cardID := fmt.Sprintf("msg-%d-card", idx)
-	colID := fmt.Sprintf("msg-%d-col", idx)
-	roleID := fmt.Sprintf("msg-%d-role", idx)
-	contentID := fmt.Sprintf("msg-%d-content", idx)
-	dataKey := fmt.Sprintf("%s/msg-%d", surfaceID, idx)
-
-	*rootChildren = append(*rootChildren, cardID)
-	*msgIdx++
-
-	if err := emitMessageShell(w, surfaceID, *rootChildren, cardID, colID, roleID, contentID, dataKey, roleLabel); err != nil {
-		return err
+	cleanContent, quickTests := extractQuickTests(content)
+	if strings.TrimSpace(cleanContent) == "" && len(quickTests) == 0 {
+		return nil
 	}
-	return emitDataUpdate(w, surfaceID, dataKey, content)
+
+	if strings.TrimSpace(cleanContent) != "" {
+		idx := *msgIdx
+		cardID := fmt.Sprintf("msg-%d-card", idx)
+		colID := fmt.Sprintf("msg-%d-col", idx)
+		roleID := fmt.Sprintf("msg-%d-role", idx)
+		contentID := fmt.Sprintf("msg-%d-content", idx)
+		dataKey := fmt.Sprintf("%s/msg-%d", surfaceID, idx)
+
+		*rootChildren = append(*rootChildren, cardID)
+		*msgIdx++
+
+		if err := emitMessageShell(w, surfaceID, *rootChildren, cardID, colID, roleID, contentID, dataKey, roleLabel); err != nil {
+			return err
+		}
+		if err := emitDataUpdate(w, surfaceID, dataKey, cleanContent); err != nil {
+			return err
+		}
+	}
+
+	for _, card := range quickTests {
+		card.SurfaceID = surfaceID
+		if err := emitQuickTest(w, &card); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+var (
+	quickReplyRe   = regexp.MustCompile(`(?s)<快捷回复>\s*(.*?)\s*</快捷回复>`)
+	imageCollectRe = regexp.MustCompile(`(?s)<图片收集>\s*(.*?)\s*</图片收集>`)
+)
+
+func extractQuickTests(content string) (string, []QuickTestMsg) {
+	if !strings.Contains(content, "<快捷回复>") && !strings.Contains(content, "<图片收集>") {
+		return content, nil
+	}
+
+	var cards []QuickTestMsg
+	matches := quickReplyRe.FindAllStringSubmatch(content, -1)
+	for _, match := range matches {
+		if len(match) < 2 {
+			continue
+		}
+		if card, ok := parseQuickReply(match[1]); ok {
+			cards = append(cards, card)
+		}
+	}
+	imageMatches := imageCollectRe.FindAllStringSubmatch(content, -1)
+	imagePrompt := ""
+	if len(imageMatches) > 0 && len(imageMatches[0]) > 1 {
+		imagePrompt = strings.TrimSpace(imageMatches[0][1])
+	}
+	if imagePrompt != "" {
+		if len(cards) == 0 {
+			cards = append(cards, QuickTestMsg{Title: "补充图片信息", SelectType: "single", ImagePrompt: imagePrompt, InputOption: true})
+		} else {
+			cards[len(cards)-1].ImagePrompt = imagePrompt
+			cards[len(cards)-1].InputOption = true
+		}
+	}
+
+	cleaned := quickReplyRe.ReplaceAllString(content, "")
+	cleaned = imageCollectRe.ReplaceAllString(cleaned, "")
+	cleaned = strings.TrimSpace(cleaned)
+	return cleaned, cards
+}
+
+func parseQuickReply(raw string) (QuickTestMsg, bool) {
+	text := strings.TrimSpace(raw)
+	selectType := "single"
+	if strings.Contains(text, "[多选]") {
+		selectType = "multiple"
+	}
+	text = strings.ReplaceAll(text, "[单选]", "")
+	text = strings.ReplaceAll(text, "[多选]", "")
+	text = strings.TrimSpace(text)
+
+	title := text
+	optionText := ""
+	if before, after, ok := strings.Cut(text, ":"); ok {
+		title = strings.TrimSpace(before)
+		optionText = strings.TrimSpace(after)
+	} else if before, after, ok := strings.Cut(text, "："); ok {
+		title = strings.TrimSpace(before)
+		optionText = strings.TrimSpace(after)
+	}
+	if title == "" {
+		return QuickTestMsg{}, false
+	}
+
+	var options []string
+	if optionText != "" {
+		for _, item := range strings.Split(optionText, "|") {
+			option := strings.TrimSpace(item)
+			if option != "" {
+				options = append(options, option)
+			}
+		}
+	}
+	return QuickTestMsg{Title: title, SelectType: selectType, Options: options, InputOption: true}, true
+}
+
+func emitQuickTest(w io.Writer, card *QuickTestMsg) error {
+	return emit(w, Message{QuickTest: card})
 }
 
 // emitToolChip emits a compact single-line chip for tool calls or tool results.

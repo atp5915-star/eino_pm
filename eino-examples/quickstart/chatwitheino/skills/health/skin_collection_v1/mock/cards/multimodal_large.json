@@ -1,0 +1,22 @@
+{
+  "description": "皮肤病情采集照片引导 mock 数据",
+  "variants": [
+    {
+      "id": "skin_collection_photo_guide",
+      "trigger_hint": "两个候选诊断的关键差异是皮损外观时",
+      "data": {
+        "card_type": "multimodal_large",
+        "guide": {
+          "images": [
+            {"label": "近照看形态", "url": "mock/skin_closeup.png"},
+            {"label": "远照看分布", "url": "mock/skin_distribution.png"}
+          ]
+        },
+        "actions": [
+          {"icon": "camera", "label": "补一张近照", "action": {"type": "camera", "label": "补一张近照"}},
+          {"icon": "gallery", "label": "选已有照片", "action": {"type": "gallery", "label": "选已有照片"}}
+        ]
+      }
+    }
+  ]
+}

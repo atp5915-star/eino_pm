@@ -1,0 +1,17 @@
+{
+  "description": "皮肤护理方案后续追问 mock 数据",
+  "variants": [
+    {
+      "id": "skin_care_plan_followups",
+      "trigger_hint": "方案输出后，引导用户细化用药、就医或复发预防",
+      "data": {
+        "card_type": "followup_bubbles",
+        "bubbles": [
+          {"icon": null, "text": "药膏要涂多大范围？", "action": {"type": "query"}},
+          {"icon": null, "text": "什么变化算在好转？", "action": {"type": "query"}},
+          {"icon": "doctor", "text": "想让医生再确认一下", "action": {"type": "service", "url": "#mock-dermatology-doctor"}}
+        ]
+      }
+    }
+  ]
+}

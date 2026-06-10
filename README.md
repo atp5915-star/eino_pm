@@ -94,7 +94,8 @@ eino_pm/
 ├── demo/                  ← 纯前端 demo（双击 index.html 可单独预览 UI）
 │   └── index.html
 ├── eino-examples/         ← Eino 官方示例（含 chatwitheino 后端服务）
-│   └── quickstart/chatwitheino/  ← 我们用的服务
+│   └── quickstart/chatwitheino/
+│       └── skills/health/ ← 运行时加载的健康管家 Skill
 ├── eino/                  ← Eino 框架源码（仅供查阅，不影响运行）
 ├── SKILL-SPEC.md          ← Skill 规范文档
 └── SKILL-GUIDE.md         ← Skill 使用指南

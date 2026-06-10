@@ -1,0 +1,16 @@
+{
+  "description": "皮肤科问医生小卡 mock 数据",
+  "variants": [
+    {
+      "id": "dermatology_ask_doctor_mini",
+      "trigger_hint": "需要线下确认或用户想问医生时",
+      "data": {
+        "card_type": "service_mini",
+        "icon": "doctor_online",
+        "title": "想再确认一下？",
+        "subtitle": "可以带着症状和照片问皮肤科医生",
+        "action": {"type": "link", "label": "问医生确认", "url": "#mock-dermatology-doctor"}
+      }
+    }
+  ]
+}

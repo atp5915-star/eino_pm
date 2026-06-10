@@ -1,0 +1,68 @@
+{
+  "description": "皮肤科 OTC 药品查询 mock 数据，供 skin_care_plan_v1 开发和演示使用",
+  "scenarios": [
+    {
+      "match": {"disease_name": "足癣"},
+      "response": {
+        "recommendations": [
+          {
+            "name": "特比萘芬乳膏",
+            "concentration": "1%",
+            "usage": "洗脚后把趾缝擦干，薄薄涂到痒、脱皮的位置和周围一点皮肤，每天1次",
+            "course": "通常要连续用够4周；不痒了也别马上停，再巩固一段时间更不容易反复",
+            "principle": "这是抗真菌药，针对脚气常见的真菌"
+          }
+        ],
+        "referral_conditions": ["红肿疼痛明显", "出现流脓或发热", "规范用药2周仍无改善"],
+        "cautions": ["不要用热水烫脚止痒", "不要症状刚好就停药", "鞋袜需要保持干燥"]
+      }
+    },
+    {
+      "match": {"disease_name": "湿疹"},
+      "response": {
+        "recommendations": [
+          {
+            "name": "氢化可的松乳膏",
+            "concentration": "1%",
+            "usage": "只在发红、痒的地方薄涂一层，每天1-2次",
+            "course": "短期用3-7天；痒和红明显下来后，就逐步回到保湿修复",
+            "principle": "这是弱效抗炎药膏，用来先把红和痒压下来"
+          },
+          {
+            "name": "炉甘石洗剂",
+            "concentration": "常规剂型",
+            "usage": "摇匀后点涂在很痒的位置，每天2-3次",
+            "course": "痒得明显时短期用，不需要长期涂",
+            "principle": "主要靠清凉和收敛感临时止痒"
+          }
+        ],
+        "referral_conditions": ["面部或私密部位反复发作", "渗液结痂明显", "用药7天仍加重"],
+        "cautions": ["不要热水烫洗", "不要大面积长期使用激素药膏", "洗后3分钟内涂保湿"]
+      }
+    },
+    {
+      "match": {"disease_name": "毛囊炎"},
+      "response": {
+        "recommendations": [
+          {
+            "name": "莫匹罗星软膏",
+            "concentration": "2%",
+            "usage": "薄涂在红肿小包和周围一点皮肤上，每天2-3次",
+            "course": "5-7天",
+            "principle": "这是外用抗菌药，用来控制毛囊口附近的细菌感染"
+          }
+        ],
+        "referral_conditions": ["硬块越来越大", "疼痛明显或有波动感", "伴发热", "私密部位反复出现"],
+        "cautions": ["不要挤压", "不要涂激素药膏", "保持局部干爽透气"]
+      }
+    },
+    {
+      "match": {"disease_name": "*"},
+      "response": {
+        "recommendations": [],
+        "referral_conditions": ["症状快速扩散", "伴发热或明显疼痛", "皮损累及眼周/口腔/生殖器黏膜", "无法判断是否适合自行用药"],
+        "cautions": ["未明确方向前不要混用激素、抗菌、抗真菌药", "不要抓挠或挤压", "保留清晰照片便于医生判断"]
+      }
+    }
+  ]
+}

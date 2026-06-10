@@ -29,6 +29,7 @@ import (
 	"github.com/cloudwego/eino/adk/prebuilt/deep"
 	"github.com/cloudwego/eino/components/tool"
 	"github.com/cloudwego/eino/compose"
+	"github.com/cloudwego/eino/schema"
 
 	commontool "github.com/cloudwego/eino-examples/adk/common/tool"
 	"github.com/cloudwego/eino-examples/quickstart/chatwitheino/chatmodel"
@@ -62,7 +63,10 @@ func buildAgentTyped[M adk.MessageType](ctx context.Context) (adk.TypedResumable
 			return nil, sbErr
 		}
 		skillMiddleware, smErr := skill.NewTyped[M](ctx, &skill.TypedConfig[M]{
-			Backend: skillBackend,
+			Backend:               skillBackend,
+			CustomSystemPrompt:    healthSkillSystemPrompt,
+			CustomToolDescription: healthSkillToolDescription,
+			CustomToolParams:      healthSkillToolParams,
 		})
 		if smErr != nil {
 			return nil, smErr
@@ -87,6 +91,40 @@ func buildAgentTyped[M adk.MessageType](ctx context.Context) (adk.TypedResumable
 	}
 	helpers.ApplyMessageModelRetry(cfg)
 	return deep.NewTyped[M](ctx, cfg)
+}
+
+func healthSkillSystemPrompt(_ context.Context, toolName string) string {
+	return fmt.Sprintf(`
+# 健康 Skill 调度规则
+
+你有一个名为 %q 的工具，用于加载健康管家专业 Skill。只要用户的问题匹配任一健康 Skill 的触发条件，必须调用该工具，不要直接回答。
+
+严格要求：命中 Skill 时，你的第一段 assistant content 必须是 tool_use；禁止在 tool_use 前输出任何普通文本、解释、安抚或“我先帮你分析”。
+
+特别注意：皮肤/体表/脚部/头皮/指甲/私密部位相关症状，例如痒、越抓越痒、红、肿、疹、疱、脱皮、脚痒、皮损原因、怎么回事、怎么办等，必须调用 skin_diagnosis_v1，参数为 {"skill":"skin_diagnosis_v1"}。
+
+调用 Skill 后，根据工具返回的完整 Skill 说明继续回答用户。`, toolName)
+}
+
+func healthSkillToolDescription(_ context.Context, skills []skill.FrontMatter) string {
+	var builder strings.Builder
+	builder.WriteString("加载并执行健康管家专业 Skill。用户请求匹配下方任一 Skill 时，必须优先调用本工具，不要直接回答。\n\n")
+	builder.WriteString("可用 Skill：\n")
+	for _, item := range skills {
+		builder.WriteString("- ")
+		builder.WriteString(item.Name)
+		builder.WriteString(": ")
+		builder.WriteString(strings.TrimSpace(item.Description))
+		builder.WriteString("\n")
+	}
+	builder.WriteString("\n强制路由示例：用户说‘脚越抓越痒是什么原因？’、‘手臂红疹很痒’、‘身上起疙瘩怎么办’时，调用参数必须是 {\"skill\":\"skin_diagnosis_v1\"}。")
+	return builder.String()
+}
+
+func healthSkillToolParams(_ context.Context, defaults map[string]*schema.ParameterInfo) (map[string]*schema.ParameterInfo, error) {
+	defaults["skill"].Desc = "要调用的健康 Skill 名称。皮肤/体表/脚部瘙痒、红疹、脱皮、皮损原因等首轮诊断问题必须填 skin_diagnosis_v1。"
+	defaults["skill"].Enum = []string{"skin_diagnosis_v1", "skin_collection_v1", "skin_care_plan_v1", "doctor_voice_answer_v2"}
+	return defaults, nil
 }
 
 func resolveSkillsDir() (string, bool) {

@@ -1,0 +1,17 @@
+{
+  "description": "皮肤病情采集快捷回答 mock 数据",
+  "variants": [
+    {
+      "id": "skin_collection_quick_answers",
+      "trigger_hint": "把最多3个高信息增益追问转成用户容易回答的选项",
+      "data": {
+        "card_type": "followup_bubbles",
+        "bubbles": [
+          {"icon": null, "text": "像一圈，边缘更明显", "action": {"type": "query"}},
+          {"icon": null, "text": "一片红，边界不太清", "action": {"type": "query"}},
+          {"icon": null, "text": "有脱皮、水疱或结痂", "action": {"type": "query"}}
+        ]
+      }
+    }
+  ]
+}

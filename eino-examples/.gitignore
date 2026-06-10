@@ -48,7 +48,9 @@ log/
 CLAUDE.md
 quickstart/chatwithdoc/data/sessions/
 quickstart/chatwithdoc/data/workspace/
-quickstart/chatwitheino/skills/
+quickstart/chatwitheino/skills/*
+!quickstart/chatwitheino/skills/health/
+!quickstart/chatwitheino/skills/health/**
 
 *.jsonl
 *.txt

@@ -1,0 +1,17 @@
+{
+  "description": "皮肤诊断首轮快捷追问 mock 数据",
+  "variants": [
+    {
+      "id": "skin_diagnosis_next_questions",
+      "trigger_hint": "首轮给出方向后，引导用户补充最关键定位信息",
+      "data": {
+        "card_type": "followup_bubbles",
+        "bubbles": [
+          {"icon": null, "text": "主要是痒，还是痛？", "action": {"type": "query"}},
+          {"icon": null, "text": "最近有变多或变大吗？", "action": {"type": "query"}},
+          {"icon": "camera", "text": "补一张清楚照片", "action": {"type": "service", "url": "#mock-upload-skin-photo"}}
+        ]
+      }
+    }
+  ]
+}

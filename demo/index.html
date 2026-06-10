@@ -37,19 +37,25 @@ body { display: flex; }
 }
 
 /* Trace side panel */
-.trace-panel {
+.trace-panel, .query-panel {
   width: 380px; min-width: 380px; background: #f9fafb; display: none; flex-direction: column;
   border-left: 1px solid #e5e7eb; margin-left: 12px; border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0,0,0,.06); overflow: hidden; height: 100%;
 }
-.trace-panel.open { display: flex; }
-.trace-header {
+.trace-panel.open, .query-panel.open { display: flex; }
+.trace-header, .query-header {
   display: flex; justify-content: space-between; align-items: center;
   padding: 12px 16px; border-bottom: 1px solid #e5e7eb; background: #fff;
 }
-.trace-header h3 { color: #333; font-size: 13px; font-weight: 600; }
-.trace-header .close-btn { background: none; border: none; color: #999; font-size: 18px; cursor: pointer; }
-.trace-header .close-btn:hover { color: #333; }
+.trace-header h3, .query-header h3 { color: #333; font-size: 13px; font-weight: 600; }
+.panel-tabs { display: flex; gap: 6px; align-items: center; }
+.panel-tab {
+  border: 1px solid #e5e7eb; background: #fff; color: #666;
+  font-size: 12px; padding: 5px 12px; border-radius: 15px; cursor: pointer;
+}
+.panel-tab.active { color: #000311; background: #f4fbfb; border-color: #b9eeee; font-weight: 600; }
+.trace-header .close-btn, .query-header .close-btn { background: none; border: none; color: #999; font-size: 18px; cursor: pointer; }
+.trace-header .close-btn:hover, .query-header .close-btn:hover { color: #333; }
 .trace-header .clear-btn { background: none; border: 1px solid #ddd; color: #666; font-size: 11px; padding: 3px 10px; border-radius: 4px; cursor: pointer; }
 .trace-header .clear-btn:hover { border-color: #999; color: #333; }
 .trace-content {
@@ -57,9 +63,19 @@ body { display: flex; }
   font-family: "SF Mono", "Fira Code", Monaco, monospace; font-size: 12px;
   line-height: 1.6;
 }
+.trace-turn { margin-bottom: 12px; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; background: #f8fafc; }
+.trace-turn-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; background: #fff; border-bottom: 1px solid #edf0f5; }
+.trace-turn-title { color: #111827; font-size: 12px; font-weight: 700; }
+.trace-turn-subtitle { color: #6b7280; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+.trace-turn-copy { border: 1px solid #d7dde6; background: #fff; color: #374151; border-radius: 10px; font-size: 11px; padding: 3px 9px; cursor: pointer; flex-shrink: 0; }
+.trace-turn-copy:hover { background: #f3f6fa; }
+.trace-turn-copy.copied { color: #fff; background: #00c8c8; border-color: #00c8c8; }
+.trace-turn-body { padding: 8px; }
 .trace-entry { margin-bottom: 8px; padding: 8px 10px; background: #fff; border-radius: 6px; border-left: 3px solid #ddd; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
 .trace-entry.type-send { border-left-color: #3b9eff; }
 .trace-entry.type-a2ui { border-left-color: #8b5cf6; }
+.trace-entry.type-agent { border-left-color: #14b8a6; }
+.trace-entry.type-ui_card { border-left-color: #f59e0b; }
 .trace-entry.type-error { border-left-color: #ef4444; }
 .trace-entry.type-session { border-left-color: #10b981; }
 .trace-entry.type-init { border-left-color: #f59e0b; }
@@ -68,6 +84,8 @@ body { display: flex; }
 .trace-type { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
 .trace-type.send { color: #2563eb; }
 .trace-type.a2ui { color: #7c3aed; }
+.trace-type.agent { color: #0f766e; }
+.trace-type.ui_card { color: #d97706; }
 .trace-type.error { color: #dc2626; }
 .trace-type.session { color: #059669; }
 .trace-type.init { color: #d97706; }
@@ -75,6 +93,26 @@ body { display: flex; }
 .trace-body .key { color: #2563eb; }
 .trace-body .str { color: #059669; }
 .trace-body .num { color: #d97706; }
+
+.query-content { flex: 1; overflow-y: auto; padding: 12px; }
+.query-section { margin-bottom: 14px; }
+.query-section-title {
+  font-size: 12px; font-weight: 600; color: #6b7280; margin: 4px 0 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.query-item {
+  background: #fff; border: 1px solid #edf0f5; border-radius: 10px;
+  padding: 10px 10px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.03);
+}
+.query-text { font-size: 13px; line-height: 19px; color: #111827; margin-bottom: 8px; }
+.query-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.query-tag { font-size: 11px; color: #00a6a6; background: #e8fafa; border-radius: 10px; padding: 2px 8px; }
+.query-copy {
+  border: 1px solid #d7dde6; background: #fff; color: #374151; border-radius: 10px;
+  font-size: 11px; padding: 3px 9px; cursor: pointer;
+}
+.query-copy:hover { background: #f3f6fa; }
+.query-copy.copied { color: #fff; background: #00c8c8; border-color: #00c8c8; }
 
 /* Header */
 .app-header {
@@ -98,15 +136,18 @@ body { display: flex; }
 .app-header .icon-btn:hover { background: rgba(255,255,255,.8); }
 .app-header .right-actions { display: flex; gap: 8px; align-items: center; }
 
-/* External trace toggle (outside phone) */
-.external-trace-btn {
+/* External dev toggles (outside phone) */
+.dev-toggle-group {
   position: absolute; top: 16px; left: calc(50% + 220px);
+  display: flex; gap: 8px;
+}
+.external-trace-btn, .external-query-btn {
   background: #fff; border: 1px solid #e5e7eb; color: #333;
   font-size: 12px; padding: 6px 14px; border-radius: 16px; cursor: pointer;
   box-shadow: 0 1px 4px rgba(0,0,0,.06);
 }
-.external-trace-btn:hover { background: #f5f6fa; }
-.external-trace-btn.hidden { display: none; }
+.external-trace-btn:hover, .external-query-btn:hover { background: #f5f6fa; }
+.external-trace-btn.hidden, .external-query-btn.hidden { display: none; }
 
 /* Banner */
 .banner {
@@ -158,10 +199,30 @@ body { display: flex; }
 }
 .msg-bubble p { margin-bottom: 0.5em; }
 .msg-bubble p:last-child { margin-bottom: 0; }
+.msg-bubble h1, .msg-bubble h2, .msg-bubble h3 {
+  margin: 12px 0 8px; color: #000311; font-weight: 600; letter-spacing: 0;
+}
+.msg-bubble h1 { font-size: 20px; line-height: 28px; }
+.msg-bubble h2 { font-size: 18px; line-height: 26px; }
+.msg-bubble h3 { font-size: 17px; line-height: 24px; }
 .msg-bubble ul, .msg-bubble ol { padding-left: 1.2em; margin: 4px 0; }
 .msg-bubble li { margin-bottom: 3px; }
 .msg-bubble pre { background: #e8ecf0; border-radius: 8px; padding: 8px 10px; overflow-x: auto; font-size: 12px; margin: 6px 0; }
 .msg-bubble code { font-size: 12px; }
+.msg-bubble table {
+  width: 100%; border-collapse: separate; border-spacing: 0; margin: 10px 0;
+  font-size: 14px; line-height: 20px; table-layout: fixed; overflow: hidden;
+  border: 1px solid #edf0f5; border-radius: 10px;
+}
+.msg-bubble th, .msg-bubble td {
+  padding: 9px 8px; vertical-align: top; text-align: left;
+  border-bottom: 1px solid #edf0f5; word-break: break-word;
+}
+.msg-bubble tr:last-child td { border-bottom: none; }
+.msg-bubble th {
+  background: #f5fbff; font-weight: 600; color: #000311;
+}
+.msg-bubble td { background: #fff; color: #252833; }
 
 /* Medical service big card */
 .medical-card {
@@ -255,6 +316,29 @@ body { display: flex; }
   font-size: 15px; font-weight: 500; display: flex; align-items: center; justify-content: center;
   padding: 0 14px;
 }
+
+/* Quick test card */
+.quick-test-card {
+  margin-top: 18px; padding: 18px; border-radius: 18px; background: #fff;
+  box-shadow: 0 8px 24px rgba(21, 45, 80, .06); color: #000311;
+}
+.quick-test-eyebrow { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #006f73; font-size: 15px; font-weight: 700; }
+.quick-test-progress { margin-left: auto; padding: 4px 10px; border-radius: 14px; background: #f7f8fb; color: #8b9099; font-size: 12px; font-weight: 500; }
+.quick-test-title { font-size: 18px; line-height: 1.7; font-weight: 500; margin-bottom: 14px; }
+.quick-test-options { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.quick-test-option {
+  min-height: 42px; max-width: 100%; padding: 8px 18px; border-radius: 21px; border: 1px solid #edf0f5;
+  background: #f9fafc; color: #272933; font-size: 16px; line-height: 22px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  white-space: normal; text-align: center; word-break: break-word;
+}
+.quick-test-option.long-option { width: 100%; border-radius: 18px; padding: 10px 16px; justify-content: flex-start; text-align: left; }
+.quick-test-option.selected { border-color: #00c8c8; background: #eaffff; color: #008f92; }
+.quick-test-image { margin-top: 8px; display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 21px; background: #f9fafc; border: 1px solid #edf0f5; color: #272933; font-size: 15px; cursor: pointer; }
+.quick-test-image svg { width: 17px; height: 17px; stroke: currentColor; flex-shrink: 0; }
+.quick-test-submit { width: 100%; height: 48px; margin-top: 14px; border: none; border-radius: 24px; background: linear-gradient(to right, #9ff4ec, #99efff); color: #fff; font-size: 18px; font-weight: 600; cursor: pointer; }
+.quick-test-submit:disabled { opacity: .62; cursor: default; }
+.quick-test-note { margin-top: 8px; color: #848691; font-size: 12px; line-height: 1.5; }
 
 /* Message actions */
 .message-actions {
@@ -386,7 +470,9 @@ body { display: flex; }
 </head>
 <body>
 
-<button class="external-trace-btn" id="trace-toggle">Trace</button>
+<div class="dev-toggle-group">
+  <button class="external-trace-btn" id="dev-toggle">调试面板</button>
+</div>
 
 <div class="layout">
   <!-- H5 Phone Page -->
@@ -449,13 +535,28 @@ body { display: flex; }
   <!-- Trace Side Panel -->
   <div class="trace-panel" id="trace-panel">
     <div class="trace-header">
-      <h3>Model Trace</h3>
+      <div class="panel-tabs">
+        <button class="panel-tab active" data-panel-tab="trace">Trace</button>
+        <button class="panel-tab" data-panel-tab="query">推荐 Query</button>
+      </div>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="clear-btn" id="trace-clear">Clear</button>
         <button class="close-btn" id="trace-close">&times;</button>
       </div>
     </div>
     <div class="trace-content" id="trace-content"></div>
+  </div>
+
+  <!-- Recommended Query Panel -->
+  <div class="query-panel" id="query-panel">
+    <div class="query-header">
+      <div class="panel-tabs">
+        <button class="panel-tab" data-panel-tab="trace">Trace</button>
+        <button class="panel-tab active" data-panel-tab="query">推荐 Query</button>
+      </div>
+      <button class="close-btn" id="query-close">&times;</button>
+    </div>
+    <div class="query-content" id="query-content"></div>
   </div>
 </div>
 
@@ -471,42 +572,168 @@ let components = {}, dataModel = {}, rootId = null;
 // ─── Trace Panel ────────────────────────────────────────────────────────────
 const tracePanel = document.getElementById('trace-panel');
 const traceContent = document.getElementById('trace-content');
+const queryPanel = document.getElementById('query-panel');
+const queryContent = document.getElementById('query-content');
 
-document.getElementById('trace-toggle').addEventListener('click', () => {
-  tracePanel.classList.add('open');
-  document.getElementById('trace-toggle').classList.add('hidden');
-});
-document.getElementById('trace-close').addEventListener('click', () => {
+function openSidePanel(panelName) {
+  const isTrace = panelName === 'trace';
+  tracePanel.classList.toggle('open', isTrace);
+  queryPanel.classList.toggle('open', !isTrace);
+  document.getElementById('dev-toggle').classList.add('hidden');
+}
+
+function closeDevPanel() {
   tracePanel.classList.remove('open');
-  document.getElementById('trace-toggle').classList.remove('hidden');
+  queryPanel.classList.remove('open');
+  document.getElementById('dev-toggle').classList.remove('hidden');
+}
+
+document.getElementById('dev-toggle').addEventListener('click', () => openSidePanel('query'));
+document.getElementById('trace-close').addEventListener('click', closeDevPanel);
+document.getElementById('query-close').addEventListener('click', closeDevPanel);
+document.querySelectorAll('[data-panel-tab]').forEach(btn => {
+  btn.addEventListener('click', () => openSidePanel(btn.dataset.panelTab));
 });
+let traceTurnSeq = 0;
+let currentTraceTurn = null;
+let currentTraceCardSignatures = new Set();
+
+const rootTraceTurn = createTraceTurn('系统初始化', '页面加载 / 会话创建');
+currentTraceTurn = rootTraceTurn;
+
 document.getElementById('trace-clear').addEventListener('click', () => {
   traceContent.innerHTML = '';
+  traceTurnSeq = 0;
+  currentTraceTurn = createTraceTurn('系统初始化', '清空后新日志');
 });
 
+function createTraceTurn(title, subtitle) {
+  const turn = {
+    id: ++traceTurnSeq,
+    title,
+    subtitle,
+    entries: [],
+    container: document.createElement('div'),
+    body: document.createElement('div'),
+  };
+  turn.container.className = 'trace-turn';
+  turn.body.className = 'trace-turn-body';
+  turn.container.innerHTML = `<div class="trace-turn-header"><div><div class="trace-turn-title">${esc(title)}</div><div class="trace-turn-subtitle">${esc(subtitle || '')}</div></div><button class="trace-turn-copy" type="button">Copy</button></div>`;
+  turn.container.appendChild(turn.body);
+  turn.container.querySelector('.trace-turn-copy').addEventListener('click', (event) => copyTraceTurn(turn, event.currentTarget));
+  traceContent.appendChild(turn.container);
+  return turn;
+}
+
+function beginTraceTurn(query) {
+  currentTraceTurn = createTraceTurn(`第 ${traceTurnSeq + 1} 轮对话`, query);
+  currentTraceCardSignatures = new Set();
+}
+
+async function copyTraceTurn(turn, btn) {
+  const text = turn.entries.map(e => `[${e.time}] ${e.type}\n${e.text}`).join('\n\n');
+  try {
+    await navigator.clipboard.writeText(text);
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1200);
+  } catch (_) {
+    btn.textContent = 'Failed';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1200);
+  }
+}
+
 function addTrace(type, data) {
+  if (!currentTraceTurn) currentTraceTurn = createTraceTurn('系统日志', '未归属轮次');
   const time = new Date().toLocaleTimeString('zh-CN', {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit'});
   const ms = String(Date.now() % 1000).padStart(3, '0');
   const entry = document.createElement('div');
   entry.className = `trace-entry type-${type.toLowerCase()}`;
 
   let body = '';
+  let rawText = '';
   if (typeof data === 'string') {
-    body = data;
+    rawText = data;
+    body = esc(data);
   } else {
+    rawText = JSON.stringify(data, null, 2);
     body = formatJSON(data);
   }
 
   entry.innerHTML = `<div class="trace-meta"><span class="trace-type ${type.toLowerCase()}">${type}</span><span class="trace-time">${time}.${ms}</span></div><div class="trace-body">${body}</div>`;
-  traceContent.appendChild(entry);
+  currentTraceTurn.entries.push({type, time: `${time}.${ms}`, text: rawText});
+  currentTraceTurn.body.appendChild(entry);
   traceContent.scrollTop = traceContent.scrollHeight;
 }
 
 function formatJSON(obj) {
-  const str = JSON.stringify(obj, null, 2);
+  let str = esc(JSON.stringify(obj, null, 2));
   return str.replace(/"([^"]+)":/g, '<span class="key">"$1"</span>:')
     .replace(/: "([^"]*)"/g, ': <span class="str">"$1"</span>')
     .replace(/: (\d+)/g, ': <span class="num">$1</span>');
+}
+
+// ─── Recommended Queries ────────────────────────────────────────────────────
+const RECOMMENDED_QUERIES = [
+  { group: 'Skill 调度：skin_diagnosis_v1', tag: '首轮诊断', text: '手臂上起了一片红疹，很痒，是怎么回事？' },
+  { group: 'Skill 调度：skin_diagnosis_v1', tag: '皮肤亚健康', text: '脚越抓越痒是什么原因？' },
+  { group: 'Skill 调度：skin_diagnosis_v1', tag: '隐私风险', text: '下面长了几个小疙瘩，好怕是不是性病' },
+  { group: 'Skill 调度：skin_collection_v1', tag: '采集链路首轮', text: '手指上长了一些小水泡，很痒' },
+  { group: 'Skill 调度：skin_collection_v1', tag: '采集链路二轮', text: '两只手都有，换季更明显' },
+  { group: 'Skill 调度：skin_collection_v1', tag: '补充定位', text: '像一圈，边缘更明显，还有点脱皮' },
+  { group: 'Skill 调度：skin_care_plan_v1', tag: '湿疹方案', text: '我得了湿疹，最近很痒，应该怎么治？' },
+  { group: 'Skill 调度：skin_care_plan_v1', tag: '足癣用药', text: '脚气反复发作，达克宁用了没效果，怎么办？' },
+  { group: 'Skill 调度：skin_care_plan_v1', tag: '毛囊炎方案', text: '下体长了一个毛囊炎怎么办？' },
+  { group: 'Skill 调度：doctor_voice_answer_v2', tag: '症状病因', text: '嗓子疼三天了，是怎么回事？' },
+  { group: 'Skill 调度：doctor_voice_answer_v2', tag: '二元判断', text: '感冒了能吃鸡蛋吗？' },
+  { group: 'Skill 调度：doctor_voice_answer_v2', tag: '指标解读', text: '体检肌酐 120 严重吗？' },
+  { group: 'Skill 调度：doctor_voice_answer_v2', tag: '中草药功效', text: '奶蓟草护肝是真的吗？' },
+  { group: '回答策略', tag: '表格/检查', text: '脑肠轴紊乱需要做什么检查？' },
+  { group: '回答策略', tag: '风险判断', text: '高血压会偏头痛吗？' },
+  { group: '回答策略', tag: '用药安全', text: '一岁小朋友吃布洛芬可以吗？' },
+  { group: '回答策略', tag: '饮食建议', text: '没有基础病，日常饮食怎么吃更健康？' },
+  { group: '医疗大卡', tag: '真人咨询', text: '我要在线问医生' },
+  { group: '医疗大卡', tag: '精准找医生', text: '我想咨询肠胃专家' },
+  { group: '医疗大卡', tag: '药品卡', text: '我想买感冒颗粒胶囊' },
+  { group: '医疗大卡', tag: '医院/挂号', text: '推荐上海治疗乙肝医院' },
+  { group: '服务追问', tag: '药品+追问', text: '一岁小朋友吃布洛芬' },
+  { group: '服务追问', tag: '报告解读', text: '帮我看看检查报告' },
+  { group: '服务追问', tag: '皮肤检测', text: '皮肤起疹子怎么办？' },
+  { group: '服务追问', tag: '饮食计划', text: '苹果有什么健康作用？' },
+  { group: '风险场景', tag: '急诊提醒', text: '突然胸口疼还喘不上气怎么办？' },
+  { group: '风险场景', tag: '儿童发热', text: '孩子发烧到40度还一直没精神怎么办？' },
+  { group: '长期管理', tag: '慢病复查', text: '高血压患者多久复查一次？' },
+  { group: '长期管理', tag: '用药计划', text: '我总是忘记吃降压药怎么办？' }
+];
+
+function renderRecommendedQueries() {
+  const groups = new Map();
+  RECOMMENDED_QUERIES.forEach(item => {
+    if (!groups.has(item.group)) groups.set(item.group, []);
+    groups.get(item.group).push(item);
+  });
+  queryContent.innerHTML = Array.from(groups.entries()).map(([group, items]) => `<div class="query-section">
+    <div class="query-section-title">${esc(group)}</div>
+    ${items.map(item => `<div class="query-item">
+      <div class="query-text">${esc(item.text)}</div>
+      <div class="query-meta"><span class="query-tag">${esc(item.tag)}</span><button class="query-copy" data-query="${attrEsc(item.text)}" onclick="copyRecommendedQuery(this)">复制</button></div>
+    </div>`).join('')}
+  </div>`).join('');
+}
+
+async function copyRecommendedQuery(btn) {
+  const query = btn.dataset.query || '';
+  try {
+    await navigator.clipboard.writeText(query);
+  } catch (_) {
+    const input = document.getElementById('msg-input');
+    input.value = query;
+    input.select();
+    document.execCommand('copy');
+  }
+  btn.textContent = '已复制';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 1200);
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -697,6 +924,8 @@ function handleServicePromptClick(el) {
 
 function appendServicePrompts(sourceText) {
   const area = document.getElementById('chat-area');
+  const items = chooseServicePrompts(sourceText).slice(0, 3);
+  addTrace('UI_CARD', { cardType: 'service_prompt_bubbles', source: 'frontend_enrichment', items });
   const row = document.createElement('div');
   row.className = 'msg-row service-prompts';
   row.innerHTML = renderServicePromptBubbles(sourceText);
@@ -739,6 +968,118 @@ function handleServiceCardClick(el) {
   window.alert(`即将打开「${title}」服务`);
 }
 
+function renderQuickTestCard(card) {
+  const options = (card.options || []).map(option => {
+    const longClass = String(option).length > 14 ? ' long-option' : '';
+    return `<button class="quick-test-option${longClass}" type="button" data-value="${attrEsc(option)}" onclick="handleQuickTestOption(this)">${esc(option)}</button>`;
+  }).join('');
+  const inputOption = card.inputOption ? `<button class="quick-test-option" type="button" data-value="输入" onclick="handleQuickTestInput(this)">✎ 输入</button>` : '';
+  const cameraIcon = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z"/><circle cx="12" cy="12.5" r="3.5"/></svg>';
+  const image = card.imagePrompt ? `<button class="quick-test-image" type="button" data-prompt="${attrEsc(card.imagePrompt)}" onclick="handleQuickTestImage(this)">${cameraIcon}拍照上传</button><div class="quick-test-note">${esc(card.imagePrompt)}</div>` : '';
+  return `<div class="quick-test-card" data-select-type="${attrEsc(card.selectType || 'single')}">
+    <div class="quick-test-eyebrow">快测问答卡 <span class="quick-test-progress">问询进度 30%</span></div>
+    <div class="quick-test-title">${esc(card.title || '请补充以下信息')}</div>
+    <div class="quick-test-options">${options}${inputOption}</div>
+    ${image}
+    <button class="quick-test-submit" type="button" disabled onclick="submitQuickTest(this)">提交</button>
+  </div>`;
+}
+
+function traceUICardOnce(payload) {
+  const signature = JSON.stringify(payload);
+  if (currentTraceCardSignatures.has(signature)) return;
+  currentTraceCardSignatures.add(signature);
+  addTrace('UI_CARD', payload);
+}
+
+function appendQuickTestCard(card, key = '') {
+  const area = document.getElementById('chat-area');
+  traceUICardOnce({
+    cardType: 'quick_test',
+    source: key ? 'frontend_inline_parser' : 'a2ui_quickTest',
+    title: card.title || '',
+    selectType: card.selectType || 'single',
+    options: card.options || [],
+    hasImagePrompt: Boolean(card.imagePrompt),
+  });
+  const row = document.createElement('div');
+  row.className = 'msg-row bot quick-test-row';
+  if (key) row.dataset.quickTestKey = key;
+  row.innerHTML = renderQuickTestCard(card);
+  area.appendChild(row);
+  scrollChat();
+}
+
+function renderInlineQuickTests(key, cards) {
+  document.querySelectorAll('.quick-test-row').forEach(el => {
+    if (el.dataset.quickTestKey === key) el.remove();
+  });
+  cards.forEach(card => appendQuickTestCard(card, key));
+}
+
+function extractInlineQuickTests(text) {
+  const cards = [];
+  const quickRe = /<快捷回复>\s*([\s\S]*?)\s*<\/快捷回复>/g;
+  const imageRe = /<图片收集>\s*([\s\S]*?)\s*<\/图片收集>/g;
+  let match;
+  while ((match = quickRe.exec(text))) {
+    const card = parseQuickReplyTag(match[1]);
+    if (card) cards.push(card);
+  }
+  const imageMatch = imageRe.exec(text);
+  const imagePrompt = imageMatch ? imageMatch[1].trim() : '';
+  if (imagePrompt) {
+    if (cards.length) {
+      cards[cards.length - 1].imagePrompt = imagePrompt;
+      cards[cards.length - 1].inputOption = true;
+    } else {
+      cards.push({ title: '补充图片信息', selectType: 'single', options: [], imagePrompt, inputOption: true });
+    }
+  }
+  return { text: text.replace(quickRe, '').replace(imageRe, '').trim(), cards };
+}
+
+function parseQuickReplyTag(raw) {
+  let value = String(raw || '').trim();
+  const selectType = value.includes('[多选]') ? 'multiple' : 'single';
+  value = value.replace(/\[单选\]|\[多选\]/g, '').trim();
+  const parts = value.split(/[:：]/);
+  const title = (parts.shift() || '').trim();
+  if (!title) return null;
+  const optionText = parts.join('：').trim();
+  const options = optionText ? optionText.split('|').map(item => item.trim()).filter(Boolean) : [];
+  return { title, selectType, options, inputOption: true };
+}
+
+function handleQuickTestOption(btn) {
+  const card = btn.closest('.quick-test-card');
+  const isMultiple = card.dataset.selectType === 'multiple';
+  if (!isMultiple) card.querySelectorAll('.quick-test-option').forEach(item => item.classList.remove('selected'));
+  btn.classList.toggle('selected');
+  const selected = card.querySelectorAll('.quick-test-option.selected').length > 0;
+  card.querySelector('.quick-test-submit').disabled = !selected;
+}
+
+function handleQuickTestInput(btn) {
+  const value = window.prompt('请输入补充信息');
+  if (!value) return;
+  btn.dataset.value = value;
+  btn.textContent = `✎ ${value}`;
+  handleQuickTestOption(btn);
+}
+
+function handleQuickTestImage(btn) {
+  addTrace('A2UI', `Quick test image requested: ${btn.dataset.prompt || ''}`);
+  imageInput.click();
+}
+
+function submitQuickTest(btn) {
+  const card = btn.closest('.quick-test-card');
+  const values = Array.from(card.querySelectorAll('.quick-test-option.selected')).map(item => item.dataset.value || item.textContent.trim());
+  if (!values.length) return;
+  sendMessage(values.join('，'));
+}
+
 function chooseServiceCard(text) {
   const value = String(text || '');
   if (/布洛芬|药|胶囊|退热|止痛|用药|买药|购买/.test(value)) return 'drug';
@@ -755,9 +1096,16 @@ function enrichBotBubble(bubble, sourceText) {
   if (!bubble || bubble.dataset.enriched === 'true') return;
   bubble.dataset.enriched = 'true';
   const medicalType = chooseMedicalCardType(sourceText);
-  const body = medicalType
-    ? renderMedicalCard(medicalType)
-    : (shouldUsePromptBubbles(sourceText) ? '' : renderServiceCard(chooseServiceCard(sourceText)));
+  const serviceKey = chooseServiceCard(sourceText);
+  const usePromptBubbles = shouldUsePromptBubbles(sourceText);
+  let body = '';
+  if (medicalType) {
+    addTrace('UI_CARD', { cardType: 'medical_service_large', source: 'frontend_enrichment', variant: medicalType });
+    body = renderMedicalCard(medicalType);
+  } else if (!usePromptBubbles) {
+    addTrace('UI_CARD', { cardType: 'service_mini', source: 'frontend_enrichment', serviceKey });
+    body = renderServiceCard(serviceKey);
+  }
   bubble.insertAdjacentHTML('beforeend', body + renderMessageActions());
   if (!medicalType) appendServicePrompts(sourceText);
 }
@@ -815,6 +1163,15 @@ let tokenCount = 0;
 let streamStartTime = 0;
 
 function processA2UIMessage(msg) {
+  if (msg.quickTest) {
+    addTrace('A2UI', { quickTest: msg.quickTest });
+    appendQuickTestCard(msg.quickTest);
+    return;
+  }
+  if (msg.agentTrace) {
+    addTrace('AGENT', msg.agentTrace);
+    return;
+  }
   if (msg.beginRendering) {
     tokenCount = 0;
     streamStartTime = Date.now();
@@ -857,7 +1214,9 @@ function updateBotBubble(key, value) {
         hideTyping();
         currentBotBubble = appendBotMsg('');
       }
-      currentBotBubble.innerHTML = typeof marked !== 'undefined' ? marked.parse(value) : esc(value);
+      const parsed = extractInlineQuickTests(value);
+      currentBotBubble.innerHTML = typeof marked !== 'undefined' ? marked.parse(parsed.text) : esc(parsed.text);
+      renderInlineQuickTests(key, parsed.cards);
       scrollChat();
     }
   }
@@ -903,6 +1262,7 @@ async function sendMessage(text) {
   currentBotBubble = null;
   isStreaming = true;
   document.getElementById('send-btn').disabled = true;
+  beginTraceTurn(text);
   addTrace('SEND', text);
 
   abortCtrl = new AbortController();
@@ -921,7 +1281,12 @@ async function sendMessage(text) {
       return;
     }
     await consumeSSE(res);
-    enrichBotBubble(currentBotBubble, text);
+    if (currentBotBubble && /<table/i.test(currentBotBubble.innerHTML)) {
+      currentBotBubble.style.maxWidth = '100%';
+    }
+    if (currentBotBubble && currentBotBubble.textContent.trim()) {
+      enrichBotBubble(currentBotBubble, text);
+    }
     if (tokenCount > 0) {
       const elapsed = ((Date.now() - streamStartTime) / 1000).toFixed(1);
       addTrace('SEND', `Done: ${tokenCount} tokens in ${elapsed}s (${(tokenCount / elapsed).toFixed(0)} tok/s)`);
@@ -1014,6 +1379,7 @@ function appendUserImageBubble(url) {
   scrollChat();
 }
 
+renderRecommendedQueries();
 addTrace('INIT', 'Demo loaded. Ready to chat.');
 </script>
 </body>

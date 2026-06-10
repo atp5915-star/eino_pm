@@ -30,6 +30,12 @@ if [ -z "${OPENAI_API_KEY:-}" ] || [ "${OPENAI_API_KEY}" = "sk-your-api-key-here
   exit 1
 fi
 
+# 默认加载项目内的健康管家 skills，可在 .env 中用 EINO_EXT_SKILLS_DIR 覆盖
+if [ -z "${EINO_EXT_SKILLS_DIR:-}" ]; then
+  EINO_EXT_SKILLS_DIR="$(pwd)/eino-examples/quickstart/chatwitheino/skills/health"
+  export EINO_EXT_SKILLS_DIR
+fi
+
 # 4. 检查 Go 是否安装
 if ! command -v go >/dev/null 2>&1; then
   echo "❌ 没有检测到 Go。请先安装：brew install go"
