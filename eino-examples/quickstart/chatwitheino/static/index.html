@@ -111,13 +111,16 @@ body { display: flex; }
 .query-image-count { display: inline-flex; margin-left: 6px; padding: 1px 6px; border-radius: 9px; background: #fff7ed; color: #ea580c; font-size: 10px; }
 .query-image-strip { display: flex; gap: 6px; margin: 0 0 8px; overflow-x: auto; padding-bottom: 2px; }
 .query-image-thumb { width: 54px; height: 54px; border-radius: 9px; border: 1px solid #e8eef5; object-fit: cover; background: #f8fafc; flex: 0 0 auto; }
-.query-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
-.query-tag { font-size: 11px; color: #00a6a6; background: #e8fafa; border-radius: 10px; padding: 2px 8px; }
-.query-copy {
-  border: 1px solid #d7dde6; background: #fff; color: #374151; border-radius: 10px;
-  font-size: 11px; padding: 3px 9px; cursor: pointer;
+.query-meta { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 8px; }
+.query-tag { flex: 0 1 auto; min-width: 0; font-size: 11px; color: #00a6a6; background: #e8fafa; border-radius: 10px; padding: 2px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.query-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+.query-copy, .query-send {
+  min-width: 50px; border: 1px solid #d7dde6; background: #fff; color: #374151; border-radius: 12px;
+  font-size: 11px; line-height: 16px; padding: 4px 10px; cursor: pointer;
 }
-.query-copy:hover { background: #f3f6fa; }
+.query-send { border-color: #b9eeee; color: #008f8f; background: #f3ffff; }
+.query-copy:hover, .query-send:hover { background: #f3f6fa; }
+.query-send:hover { background: #e8fafa; }
 .query-copy.copied { color: #fff; background: #00c8c8; border-color: #00c8c8; }
 
 /* Header */
@@ -218,7 +221,7 @@ body { display: flex; }
   position: relative; margin: 20px 0 12px; padding-left: 14px; color: #000311; font-weight: 800; letter-spacing: 0; line-height: 1.35;
 }
 .msg-bubble h1::before, .msg-bubble h2::before, .msg-bubble h3::before, .msg-bubble h4::before, .msg-bubble h5::before, .msg-bubble h6::before {
-  content: ''; position: absolute; left: 0; top: .2em; width: 4px; height: 1.1em; border-radius: 4px; background: #18d5d5;
+  content: ''; position: absolute; left: 0; top: .68em; transform: translateY(-50%); width: 4px; height: 1.05em; border-radius: 4px; background: #18d5d5;
 }
 .msg-bubble h1 { font-size: 23px; }
 .msg-bubble h2 { font-size: 21px; }
@@ -231,14 +234,15 @@ body { display: flex; }
 .msg-bubble li { position: relative; margin: 8px 0; padding-left: 26px; }
 .msg-bubble li > ul, .msg-bubble li > ol { margin: 8px 0 4px; }
 .msg-bubble ul > li::before {
-  content: ''; position: absolute; left: 2px; top: .72em; width: 7px; height: 7px; border: 2px solid #18c7c7; border-radius: 50%; background: #fff;
+  content: ''; position: absolute; left: 2px; top: .89em; transform: translateY(-50%); width: 7px; height: 7px; border: 2px solid #18c7c7; border-radius: 50%; background: #fff;
 }
 .msg-bubble ul ul > li::before { width: 5px; height: 5px; border-width: 0; background: #111827; }
 .msg-bubble ol { counter-reset: item; }
 .msg-bubble ol > li { counter-increment: item; }
 .msg-bubble ol > li::before {
-  content: counter(item); position: absolute; left: 0; top: .18em; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 7px;
-  background: #18c7c7; color: #fff; font-size: 12px; font-weight: 800; line-height: 18px; text-align: center;
+  content: counter(item); position: absolute; left: 0; top: .89em; transform: translateY(-50%); width: 26px; height: 20px; padding: 0; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #18c7c7; color: #fff; font-size: 12px; font-weight: 800; line-height: 1; text-align: center;
 }
 .msg-bubble input[type="checkbox"] { margin: 0 8px 0 -2px; accent-color: #18c7c7; transform: scale(1.05); }
 .msg-bubble blockquote { margin: 12px 0; padding: 2px 0 2px 14px; border-left: 3px solid #e4e8ef; color: #767b86; }
@@ -800,13 +804,19 @@ function formatJSON(obj) {
 }
 
 // ─── Recommended Queries ────────────────────────────────────────────────────
+const DEFAULT_REPORT_SAMPLE_IMAGES = [
+  '/assets/report-samples/report-sample-1.jpg',
+  '/assets/report-samples/report-sample-2.jpg',
+  '/assets/report-samples/report-sample-3.jpeg',
+];
+
 function loadReportSampleImages() {
   try {
     const raw = localStorage.getItem('reportSampleImages');
     const images = raw ? JSON.parse(raw) : [];
-    return Array.isArray(images) ? images.filter(Boolean) : [];
+    return Array.isArray(images) && images.length ? images.filter(Boolean) : DEFAULT_REPORT_SAMPLE_IMAGES;
   } catch (_) {
-    return [];
+    return DEFAULT_REPORT_SAMPLE_IMAGES;
   }
 }
 
@@ -815,7 +825,6 @@ const REPORT_IMAGE_QUERIES = REPORT_SAMPLE_IMAGES.length ? [
   { group: 'Skill 调度：report_reading_v1', tag: '样本图 1', text: '帮我解读这张报告单，重点说严重不严重', images: [REPORT_SAMPLE_IMAGES[0]] },
   { group: 'Skill 调度：report_reading_v1', tag: '样本图 2', text: '这份检查报告有什么异常？下一步怎么办？', images: [REPORT_SAMPLE_IMAGES[1] || REPORT_SAMPLE_IMAGES[0]] },
   { group: 'Skill 调度：report_reading_v1', tag: '样本图 3', text: '帮我看下这份报告，需要挂什么科复查？', images: [REPORT_SAMPLE_IMAGES[2] || REPORT_SAMPLE_IMAGES[0]] },
-  { group: 'Skill 调度：report_reading_v1', tag: '多图批量', text: '请综合解读这几张报告单，按严重程度排序', images: REPORT_SAMPLE_IMAGES },
 ] : [];
 
 const RECOMMENDED_QUERIES = [
@@ -864,11 +873,13 @@ function renderRecommendedQueries() {
   queryContent.innerHTML = Array.from(groups.entries()).map(([group, items]) => `<div class="query-section">
     <div class="query-section-title">${esc(group)}</div>
     ${items.map(item => {
-      const imageStrip = item.images ? `<div class="query-image-strip">${item.images.map(url => `<img class="query-image-thumb" src="${attrEsc(url)}" loading="lazy"/>`).join('')}</div>` : '';
+      const index = RECOMMENDED_QUERIES.indexOf(item);
+      const hasImages = item.images && item.images.length;
+      const imageStrip = hasImages ? `<div class="query-image-strip">${item.images.map(url => `<img class="query-image-thumb" src="${attrEsc(url)}" loading="lazy"/>`).join('')}</div>` : '';
       return `<div class="query-item">
-        <div class="query-text">${esc(item.text)}${item.images ? `<span class="query-image-count">附 ${item.images.length} 张图</span>` : ''}</div>
+        <div class="query-text">${esc(item.text)}${hasImages ? `<span class="query-image-count">附 ${item.images.length} 张图</span>` : ''}</div>
         ${imageStrip}
-        <div class="query-meta"><span class="query-tag">${esc(item.tag)}</span><button class="query-copy" data-query="${attrEsc(item.text)}" onclick="copyRecommendedQuery(this)">复制</button>${item.images ? `<button class="query-copy" data-index="${RECOMMENDED_QUERIES.indexOf(item)}" onclick="sendRecommendedQuery(this)">发送+图片</button>` : ''}</div>
+        <div class="query-meta"><span class="query-tag">${esc(item.tag)}</span><div class="query-actions"><button class="query-copy" data-query="${attrEsc(item.text)}" onclick="copyRecommendedQuery(this)">复制</button><button class="query-send" data-index="${index}" onclick="sendRecommendedQuery(this)">${hasImages ? '发送+图片' : '发送'}</button></div></div>
       </div>`;
     }).join('')}
   </div>`).join('');

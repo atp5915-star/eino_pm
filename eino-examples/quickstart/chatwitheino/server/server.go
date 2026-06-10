@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -195,6 +196,26 @@ func (s *Server[M]) Spin() {
 		c.Data(consts.StatusOK, "text/html; charset=utf-8", data)
 	})
 
+	h.GET("/assets/*path", func(ctx context.Context, c *app.RequestContext) {
+		relPath := strings.TrimPrefix(c.Param("path"), "/")
+		cleanPath := filepath.Clean(relPath)
+		if cleanPath == "." || strings.HasPrefix(cleanPath, "..") || filepath.IsAbs(cleanPath) {
+			c.JSON(consts.StatusBadRequest, map[string]string{"error": "invalid asset path"})
+			return
+		}
+		assetPath := filepath.Join("static", "assets", cleanPath)
+		data, err := os.ReadFile(assetPath)
+		if err != nil {
+			c.JSON(consts.StatusNotFound, map[string]string{"error": "asset not found"})
+			return
+		}
+		contentType := mime.TypeByExtension(filepath.Ext(assetPath))
+		if contentType == "" {
+			contentType = http.DetectContentType(data)
+		}
+		c.Data(consts.StatusOK, contentType, data)
+	})
+
 	h.POST("/sessions", func(ctx context.Context, c *app.RequestContext) {
 		id := uuid.New().String()
 		if _, err := s.cfg.Store.GetOrCreate(id); err != nil {
@@ -280,7 +301,7 @@ func normalizeImageURLs(images []string) []string {
 			continue
 		}
 		lower := strings.ToLower(image)
-		if !strings.HasPrefix(lower, "http://") && !strings.HasPrefix(lower, "https://") && !strings.HasPrefix(lower, "data:image/") {
+		if !strings.HasPrefix(lower, "http://") && !strings.HasPrefix(lower, "https://") && !strings.HasPrefix(lower, "data:image/") && !strings.HasPrefix(lower, "/assets/") {
 			continue
 		}
 		if _, ok := seen[image]; ok {
@@ -307,13 +328,17 @@ func buildImageInputs(ctx context.Context, imageURLs []string) []msgops.ImageInp
 }
 
 func fetchImageAsBase64(ctx context.Context, imageURL string) (msgops.ImageInput, error) {
-	if strings.HasPrefix(strings.ToLower(imageURL), "data:image/") {
+	lowerURL := strings.ToLower(imageURL)
+	if strings.HasPrefix(lowerURL, "data:image/") {
 		mimeType := strings.TrimPrefix(strings.SplitN(imageURL, ";", 2)[0], "data:")
 		base64Data := imageURL
 		if parts := strings.SplitN(imageURL, ",", 2); len(parts) == 2 {
 			base64Data = parts[1]
 		}
 		return msgops.ImageInput{Base64Data: base64Data, MIMEType: mimeType}, nil
+	}
+	if strings.HasPrefix(lowerURL, "/assets/") {
+		return readLocalAssetImageAsBase64(imageURL)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, imageURL, nil)
@@ -341,6 +366,31 @@ func fetchImageAsBase64(ctx context.Context, imageURL string) (msgops.ImageInput
 	if idx := strings.Index(mimeType, ";"); idx >= 0 {
 		mimeType = strings.TrimSpace(mimeType[:idx])
 	}
+	if mimeType == "" || !strings.HasPrefix(strings.ToLower(mimeType), "image/") {
+		mimeType = http.DetectContentType(body)
+	}
+	if !strings.HasPrefix(strings.ToLower(mimeType), "image/") {
+		return msgops.ImageInput{}, fmt.Errorf("unsupported image mime type %q", mimeType)
+	}
+	return msgops.ImageInput{Base64Data: base64.StdEncoding.EncodeToString(body), MIMEType: mimeType}, nil
+}
+
+func readLocalAssetImageAsBase64(assetURL string) (msgops.ImageInput, error) {
+	relPath := strings.TrimPrefix(assetURL, "/assets/")
+	cleanPath := filepath.Clean(relPath)
+	if cleanPath == "." || strings.HasPrefix(cleanPath, "..") || filepath.IsAbs(cleanPath) {
+		return msgops.ImageInput{}, fmt.Errorf("invalid local image path %q", assetURL)
+	}
+	assetPath := filepath.Join("static", "assets", cleanPath)
+	body, err := os.ReadFile(assetPath)
+	if err != nil {
+		return msgops.ImageInput{}, err
+	}
+	const maxImageBytes = 8 << 20
+	if len(body) > maxImageBytes {
+		return msgops.ImageInput{}, fmt.Errorf("image too large: %d bytes", len(body))
+	}
+	mimeType := mime.TypeByExtension(filepath.Ext(assetPath))
 	if mimeType == "" || !strings.HasPrefix(strings.ToLower(mimeType), "image/") {
 		mimeType = http.DetectContentType(body)
 	}
