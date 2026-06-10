@@ -1,0 +1,17 @@
+.env
+.env.*
+.vercel
+.git
+.DS_Store
+
+# 本地素材/工作目录，不参与部署包
+dermatology-ideal-state/
+wangxiaoying-ideal-answer/
+
+# Go/Eino 源码大目录；Vercel 当前只用于托管静态 demo 资产
+eino/
+eino-examples/
+
+# 本地运行脚本/文档
+run.sh
+*.md
