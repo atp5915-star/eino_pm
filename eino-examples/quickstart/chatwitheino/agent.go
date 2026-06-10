@@ -105,7 +105,9 @@ func healthSkillSystemPrompt(_ context.Context, toolName string) string {
 
 特别注意：医学报告单/化验单/影像报告/病理报告/体检报告/产检报告相关解读，例如“帮我看看检查报告”“这份化验单严重吗”“CT 报告是不是肛瘘”“病理报告下一步怎么办”等，必须调用 report_reading_v1，参数为 {"skill":"report_reading_v1"}。如果当前没有真实图片，先基于用户文字说明给上传引导，不要编造图片内容。
 
-调用 Skill 后，根据工具返回的完整 Skill 说明继续回答用户。`, toolName)
+调用 Skill 后，根据工具返回的完整 Skill 说明继续回答用户。
+
+Markdown 输出要求：使用粗体时必须写成 **关键词**，闭合的 ** 前后不要插入多余空格；不要输出 **关键词 **、** 关键词** 或空的 **** 这类非标准写法。标题必须短，只能是 4-12 个字的小节名，例如“需要就医的情况”“为什么会反复”“下一步建议”；不要把判断、原因、症状列表或整段解释写进标题，长内容必须放到标题下面的自然段或列表里。`, toolName)
 }
 
 func healthSkillToolDescription(_ context.Context, skills []skill.FrontMatter) string {

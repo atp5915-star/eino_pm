@@ -422,12 +422,16 @@ func (s *Server[M]) handleChat(ctx context.Context, c *app.RequestContext) {
 
 	body, _ := c.Body()
 	var req chatRequest
-	if err := json.Unmarshal(body, &req); err != nil || req.Message == "" {
-		c.JSON(consts.StatusBadRequest, map[string]string{"error": "message is required"})
+	if err := json.Unmarshal(body, &req); err != nil {
+		c.JSON(consts.StatusBadRequest, map[string]string{"error": "invalid request"})
 		return
 	}
-
+	req.Message = strings.TrimSpace(req.Message)
 	imageURLs := normalizeImageURLs(req.Images)
+	if req.Message == "" && len(imageURLs) == 0 {
+		c.JSON(consts.StatusBadRequest, map[string]string{"error": "message or image is required"})
+		return
+	}
 	images := buildImageInputs(ctx, imageURLs)
 	log.Printf("[chat] session=%s msg=%q images=%d", id, req.Message, len(images))
 
@@ -730,7 +734,7 @@ func (s *Server[M]) makeGenInput(sess *mem.Session[M], sessionID string) func(ct
 		var remaining []*ChatItem
 		var queryItem *ChatItem
 		for _, item := range items {
-			if queryItem == nil && item.Query != "" {
+			if queryItem == nil && (item.Query != "" || len(item.Images) > 0) {
 				queryItem = item
 				consumed = append(consumed, item)
 			} else {

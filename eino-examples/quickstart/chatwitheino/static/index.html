@@ -216,9 +216,9 @@ body { display: flex; }
 .msg-bubble strong { font-weight: 800; color: #000311; }
 .msg-bubble em { font-style: italic; }
 .msg-bubble del { color: #4b5563; text-decoration-thickness: 1.5px; text-decoration-color: #111827; }
-.msg-bubble u { text-decoration-color: #e7c7a7; text-decoration-thickness: 6px; text-underline-offset: -2px; }
+.msg-bubble u { font-weight: 800; color: #000311; text-decoration-color: rgba(24, 199, 199, .28); text-decoration-thickness: 6px; text-underline-offset: -2px; }
 .msg-bubble h1, .msg-bubble h2, .msg-bubble h3, .msg-bubble h4, .msg-bubble h5, .msg-bubble h6 {
-  position: relative; margin: 20px 0 12px; padding-left: 14px; color: #000311; font-weight: 800; letter-spacing: 0; line-height: 1.35;
+  position: relative; margin: 20px 0 12px; padding-left: 14px; color: #000311; font-weight: 800; letter-spacing: 0; line-height: 1.42; word-break: break-word;
 }
 .msg-bubble h1::before, .msg-bubble h2::before, .msg-bubble h3::before, .msg-bubble h4::before, .msg-bubble h5::before, .msg-bubble h6::before {
   content: ''; position: absolute; left: 0; top: .68em; transform: translateY(-50%); width: 4px; height: 1.05em; border-radius: 4px; background: #18d5d5;
@@ -229,9 +229,10 @@ body { display: flex; }
 .msg-bubble h4 { font-size: 18px; }
 .msg-bubble h5 { font-size: 17px; }
 .msg-bubble h6 { font-size: 16px; }
+.msg-bubble .long-heading-fallback { margin: 8px 0 12px; font-size: inherit; line-height: inherit; }
 .msg-bubble hr { border: 0; border-top: 1px solid #edf0f5; margin: 18px 0; }
 .msg-bubble ul, .msg-bubble ol { margin: 10px 0 14px; padding-left: 0; list-style: none; }
-.msg-bubble li { position: relative; margin: 8px 0; padding-left: 26px; }
+.msg-bubble li { position: relative; margin: 8px 0; padding-left: 30px; }
 .msg-bubble li > ul, .msg-bubble li > ol { margin: 8px 0 4px; }
 .msg-bubble ul > li::before {
   content: ''; position: absolute; left: 2px; top: .89em; transform: translateY(-50%); width: 7px; height: 7px; border: 2px solid #18c7c7; border-radius: 50%; background: #fff;
@@ -240,7 +241,7 @@ body { display: flex; }
 .msg-bubble ol { counter-reset: item; }
 .msg-bubble ol > li { counter-increment: item; }
 .msg-bubble ol > li::before {
-  content: counter(item); position: absolute; left: 0; top: .89em; transform: translateY(-50%); width: 26px; height: 20px; padding: 0; border-radius: 8px;
+  content: counter(item); position: absolute; left: 0; top: .98em; transform: translateY(-50%); width: 22px; height: 22px; padding: 0; border-radius: 7px;
   display: inline-flex; align-items: center; justify-content: center;
   background: #18c7c7; color: #fff; font-size: 12px; font-weight: 800; line-height: 1; text-align: center;
 }
@@ -667,7 +668,7 @@ body { display: flex; }
     <div class="trace-header">
       <div class="panel-tabs">
         <button class="panel-tab active" data-panel-tab="trace">Trace</button>
-        <button class="panel-tab" data-panel-tab="query">推荐 Query</button>
+        <button class="panel-tab" data-panel-tab="query">测试 Query</button>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="clear-btn" id="trace-clear">Clear</button>
@@ -682,7 +683,7 @@ body { display: flex; }
     <div class="query-header">
       <div class="panel-tabs">
         <button class="panel-tab" data-panel-tab="trace">Trace</button>
-        <button class="panel-tab active" data-panel-tab="query">推荐 Query</button>
+        <button class="panel-tab active" data-panel-tab="query">测试 Query</button>
       </div>
       <button class="close-btn" id="query-close">&times;</button>
     </div>
@@ -773,6 +774,27 @@ async function copyTraceTurn(turn, btn) {
   }
 }
 
+function compactTraceData(data) {
+  if (!data || typeof data !== 'object') return data;
+  if (Array.isArray(data)) return data.map(compactTraceData);
+  const out = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (key === 'images' && Array.isArray(value)) {
+      out[key] = value.map((image, index) => {
+        const size = typeof image === 'string' ? image.length : 0;
+        if (typeof image === 'string' && image.startsWith('data:image/')) {
+          const mime = image.slice(5, image.indexOf(';')) || 'image';
+          return `[${mime} base64 #${index + 1}, ${Math.round(size / 1024)}KB]`;
+        }
+        return image;
+      });
+    } else {
+      out[key] = compactTraceData(value);
+    }
+  }
+  return out;
+}
+
 function addTrace(type, data) {
   if (!currentTraceTurn) currentTraceTurn = createTraceTurn('系统日志', '未归属轮次');
   const time = new Date().toLocaleTimeString('zh-CN', {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit'});
@@ -786,8 +808,9 @@ function addTrace(type, data) {
     rawText = data;
     body = esc(data);
   } else {
-    rawText = JSON.stringify(data, null, 2);
-    body = formatJSON(data);
+    const traceData = compactTraceData(data);
+    rawText = JSON.stringify(traceData, null, 2);
+    body = formatJSON(traceData);
   }
 
   entry.innerHTML = `<div class="trace-meta"><span class="trace-type ${type.toLowerCase()}">${type}</span><span class="trace-time">${time}.${ms}</span></div><div class="trace-body">${body}</div>`;
@@ -1393,7 +1416,8 @@ function appendUserMsg(text, images = []) {
   row.className = 'msg-row user';
   if (images.length) {
     const imageHtml = `<div class="user-attachment-grid ${images.length === 1 ? 'single' : ''}">${images.map(url => `<div class="user-attachment-card"><img src="${attrEsc(url)}" loading="lazy"/></div>`).join('')}</div>`;
-    row.innerHTML = `<div class="user-message-stack">${imageHtml}<div class="msg-bubble user">${esc(text)}</div></div>`;
+    const textHtml = text ? `<div class="msg-bubble user">${esc(text)}</div>` : '';
+    row.innerHTML = `<div class="user-message-stack">${imageHtml}${textHtml}</div>`;
   } else {
     row.innerHTML = `<div class="msg-bubble user">${esc(text)}</div>`;
   }
@@ -1486,14 +1510,31 @@ function processA2UIMessage(msg) {
   addTrace('A2UI', msg);
 }
 
+function normalizeMarkdown(text) {
+  return (text || '')
+    .replace(/\*\*\s*\*\*/g, '')
+    .replace(/\*\*\s+([^*\n][^\n]*?\S)\s+\*\*/g, '**$1**')
+    .replace(/\*\*([^*\n][^\n]*?\S)\s+\*\*/g, '**$1**')
+    .replace(/\*\*\s+([^*\n][^\n]*?\S)\*\*/g, '**$1**');
+}
+
 function renderMarkdown(text) {
   if (typeof marked === 'undefined') return esc(text);
   marked.setOptions({ gfm: true, breaks: true, mangle: false, headerIds: false });
-  return marked.parse(text || '');
+  return marked.parse(normalizeMarkdown(text));
 }
 
 function enhanceBotMarkdown(root) {
   if (!root) return;
+  root.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+    const text = heading.textContent.trim();
+    if (text.length <= 24 && !/[，。；：,.;]/.test(text)) return;
+    const paragraph = document.createElement('p');
+    paragraph.className = 'long-heading-fallback';
+    paragraph.innerHTML = heading.innerHTML;
+    heading.replaceWith(paragraph);
+  });
+
   root.querySelectorAll('table').forEach(table => {
     if (table.parentElement && table.parentElement.classList.contains('table-scroll')) return;
     const wrapper = document.createElement('div');
@@ -1612,7 +1653,7 @@ async function sendMessageWithImages(text, images = []) {
   currentBotBubble = null;
   isStreaming = true;
   document.getElementById('send-btn').disabled = true;
-  beginTraceTurn(text);
+  beginTraceTurn(text || (images.length ? `图片消息（${images.length}张）` : ''));
   addTrace('SEND', images.length ? { text, images } : text);
 
   abortCtrl = new AbortController();
@@ -1670,7 +1711,7 @@ async function flushSend() {
   pendingImages = [];
   renderPreviews();
   input.value = '';
-  await sendMessageWithImages(text || '请解读这些图片', images);
+  await sendMessageWithImages(text, images);
 }
 
 document.getElementById('send-btn').addEventListener('click', flushSend);
