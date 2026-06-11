@@ -1,0 +1,112 @@
+id: consumer_medical_v1
+name: consumer_medical_v1
+display_name: 【管线】消费医疗与健康服务决策
+domain: consumer_medical
+owner: pending
+version: v1.0
+status: draft
+
+short_description: 体检、疫苗、齿科、眼科、医美、康复等消费医疗服务决策 Skill。
+description: >-
+  当用户询问消费医疗项目选择、体检套餐、疫苗、齿科、眼科、医美、康复、健康管理服务、套餐对比或预约购买决策时触发。
+  强需求直接回答；中相关性命中时，以服务卡承接服务推荐、项目对比、机构/医生咨询或购买决策支持。
+capabilities:
+  - 消费医疗项目选择和服务决策
+  - 体检、疫苗、齿科、眼科、医美、康复等服务对比
+  - 项目适应证、禁忌、风险和准备事项说明
+  - 服务卡承接预约咨询或购买决策
+
+routing:
+  direct_answer:
+    enabled: true
+    priority: 76
+    description: 用户明确咨询消费医疗项目、套餐对比、服务选择、预约或购买决策时直接回答。
+    query_intents:
+      - 体检套餐、疫苗、齿科、眼科、医美、康复等服务怎么选
+      - 多个项目/套餐/机构/价格之间对比
+      - 消费医疗项目适合人群、禁忌、风险和注意事项
+      - 用户有预约、购买、咨询服务意图
+    examples:
+      - 体检套餐怎么选？
+      - 洗牙和牙周治疗有什么区别，选哪个？
+      - 近视手术适合我吗？
+      - 这个医美项目有没有风险？
+  service_card:
+    enabled: true
+    priority: 64
+    description: 主健康回答后适合体检、疫苗、齿科、眼科、康复、医美等服务承接时出卡。
+    query_intents:
+      - 健康咨询后适合推荐体检、疫苗、康复或专科服务
+      - 用户需要预算、城市、机构或服务顾问继续承接
+    examples:
+      - 想预约一个合适的体检
+      - 有没有适合我的服务项目？
+
+demand_scenarios:
+  strong:
+    - 明确消费医疗项目选择、套餐对比、预约咨询或购买决策诉求。
+  medium:
+    - 主健康回答后存在服务转化价值，但用户主诉仍是健康问题。
+  weak:
+    - 需要严肃诊疗、急症处理或疾病治疗方案，不应直接推消费服务。
+
+entrypoints:
+  vita:
+    direct_answer: true
+    service_card: true
+    description: 健康管家消费医疗服务决策和服务卡承接。
+  baikan:
+    enabled: false
+    mode: []
+    description: 待确认是否进入百看分发。
+  quick_test:
+    enabled: true
+    mode:
+      - direct_answer
+      - service_card
+    description: 支持体检、疫苗、齿科、眼科、医美、康复项目测试。
+  skill_supply:
+    enabled: true
+    target:
+      - health_agent
+      - consumer_medical_flow
+
+product:
+  framework: health_skill_registration_v1
+  difference_from_vita: []
+  demo:
+    images: []
+    url: null
+  current_stage: pipeline_draft
+
+service_card:
+  enabled: true
+  card_type:
+    - service_large
+    - followup_bubbles
+  title: 获取健康服务建议
+  subtitle: 对比项目适配、风险、预算和预约路径。
+  cta: 查看服务
+  target:
+    type: skill
+    url: null
+  trigger_policy:
+    show_after_main_answer: true
+    max_per_session: 2
+    avoid_when_direct_answer: false
+
+dependencies: []
+notes:
+  - 需要避免硬广感，先完成医学判断和风险边界，再承接服务。
+  - 急症和严肃疾病治疗优先转诊疗 Skill 或线下就医。
+
+generated:
+  from: SKILL.md
+  reviewed: false
+  generated_at: 2026-06-11
+  needs_review:
+    - owner
+    - service_categories
+    - baikan.enabled
+    - service_card.title
+    - product.demo.url

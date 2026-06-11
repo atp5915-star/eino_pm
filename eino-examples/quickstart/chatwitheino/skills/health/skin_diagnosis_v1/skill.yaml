@@ -1,0 +1,117 @@
+id: skin_diagnosis_v1
+name: skin_diagnosis_v1
+display_name: 皮肤诊断与方向判断
+domain: skin
+owner: jiaoziyu
+version: v1.0
+status: draft
+
+short_description: 皮肤、黏膜、毛发、指甲等体表异常的首轮诊断与方向判断入口。
+description: >-
+  当用户描述自身正在经历的皮肤/黏膜/毛发/指甲/私密部位等体表异常，且尚未明确疾病名称时触发。
+  负责基于文字、图片和多轮上下文给出更像什么、是否严重、为什么会这样、当前怎么处理以及是否需要继续采集。
+capabilities:
+  - 皮肤症状首轮诊断方向判断
+  - 皮肤亚健康问题归因分析
+  - 私密部位和性病相关皮肤风险评估
+  - 皮肤外伤、叮咬、过敏、疫苗后皮肤反应初步判断
+  - 需要补图或追问时生成多模态/快捷回复卡片
+
+routing:
+  direct_answer:
+    enabled: true
+    priority: 90
+    description: 用户描述自身皮肤或体表症状，且未明确确诊病名时，直接由本 Skill 回答首轮判断。
+    query_intents:
+      - 描述皮肤症状但不知道是什么病
+      - 询问自身皮肤症状是什么原因或怎么回事
+      - 描述皮肤症状并问怎么办、怎么治、用什么药
+      - 描述皮肤亚健康困扰并希望改善或判断原因
+      - 咨询私密部位、头皮、耳朵、嘴唇、指甲、肛周等体表不适
+      - 咨询蚊虫叮咬、过敏、烫伤、烧伤、刺激物接触后的皮肤反应
+    examples:
+      - 身上起红疹很痒是怎么回事？
+      - 脚上脱皮还痒，是不是脚气？
+      - 私处长了几个疙瘩，会不会是性病？
+      - 被蚊子咬后肿得很大怎么办？
+  service_card:
+    enabled: true
+    priority: 55
+    description: 主回答已覆盖基础判断，但需要用户补充患处照片、症状定位或快捷选择时，出多模态/快捷回复卡片承接。
+    query_intents:
+      - 需要上传患处照片才能判断形态、边界、分布或进展
+      - 首轮判断后需要用户补充少量关键信息
+    examples:
+      - 脸上这个红斑是什么？
+      - 这个疹子严重吗？
+
+demand_scenarios:
+  strong:
+    - 用户有个人正在经历的皮肤/体表症状，并要求判断、原因、严重度或处理方式。
+    - 用户上传皮肤、私密部位、头皮、指甲等体表照片并求助判断。
+  medium:
+    - 用户泛泛提到皮肤不适但信息很少，需要引导补图或补充症状。
+    - 用户已有主回答后，需要进一步判断是否需要上传照片或选择症状分支。
+  weak:
+    - 用户只问某个已知皮肤病的百科、病因、遗传等泛科普问题。
+    - 用户表达医美改善诉求，如变白、去皱、瘦脸、双眼皮。
+
+entrypoints:
+  vita:
+    direct_answer: true
+    service_card: true
+    description: 文心健康管家 IM 首轮皮肤问题入口。
+  baikan:
+    enabled: false
+    mode: []
+    description: 待确认是否进入百看分发。
+  quick_test:
+    enabled: true
+    mode:
+      - direct_answer
+      - service_card
+    description: 支持皮肤症状与图片上传测试。
+  skill_supply:
+    enabled: true
+    target:
+      - health_agent
+      - skin_flow
+
+product:
+  framework: health_skill_registration_v1
+  difference_from_vita: []
+  demo:
+    images: []
+    url: null
+  current_stage: demo
+
+service_card:
+  enabled: true
+  card_type:
+    - multimodal_large
+    - quick_test
+  title: 补充患处照片或症状细节
+  subtitle: 帮健康管家更准确判断皮损形态、分布和风险。
+  cta: 去补充
+  target:
+    type: skill
+    url: null
+  trigger_policy:
+    show_after_main_answer: true
+    max_per_session: 2
+    avoid_when_direct_answer: false
+
+dependencies: []
+notes:
+  - 与皮肤治疗方案 Skill 的边界：用户已明确确诊皮肤病且直接问治疗时，应转 skin_care_plan_v1。
+  - 与通用科普 Skill 的边界：泛泛问已知病名知识时不作为首轮诊断入口。
+
+generated:
+  from: SKILL.md
+  reviewed: false
+  generated_at: 2026-06-11
+  needs_review:
+    - baikan.enabled
+    - service_card.max_per_session
+    - product.demo.url
+    - skill_supply.target

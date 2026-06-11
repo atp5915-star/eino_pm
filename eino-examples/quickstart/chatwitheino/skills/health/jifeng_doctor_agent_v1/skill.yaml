@@ -1,0 +1,110 @@
+id: jifeng_doctor_agent_v1
+name: jifeng_doctor_agent_v1
+display_name: 【管线】疾风医生智能体
+domain: doctor_agent
+owner: pending
+version: v1.0
+status: draft
+
+short_description: 医生 Agent、专科深度问答、复杂健康问题连续随访的分发管线 Skill。
+description: >-
+  当用户需要医生智能体、专科医生深度咨询、连续随访、复杂健康问题管理或明确想问医生时触发。
+  强需求直接进入医生智能体回答；中相关性命中时，以服务卡推荐疾风医生 Agent 服务。
+capabilities:
+  - 医生 Agent 服务分发
+  - 专科问诊和复杂问题承接
+  - 多资料、多轮病史和连续随访场景识别
+  - 主回答后的医生服务卡推荐
+
+routing:
+  direct_answer:
+    enabled: true
+    priority: 78
+    description: 用户明确要求医生 Agent、问医生、专科医生深度咨询或连续随访时直接触发。
+    query_intents:
+      - 想问医生、找医生、进入医生 Agent
+      - 复杂健康问题需要多轮深度咨询
+      - 多份报告/症状/病史需要持续管理
+    examples:
+      - 我想找医生详细看看这个问题
+      - 能不能进入医生 Agent 帮我连续跟进？
+      - 我有好几份报告，想让专科医生一起看
+  service_card:
+    enabled: true
+    priority: 68
+    description: 主回答可以先完成，但问题明显存在医生服务价值时出卡承接。
+    query_intents:
+      - 需要专科医生、连续随访、资料整理或个性化管理
+      - 中高风险或复杂问题回答后适合医生服务承接
+    examples:
+      - 这个情况适合找医生继续看吗？
+      - 后续能不能持续跟踪？
+
+demand_scenarios:
+  strong:
+    - 明确医生 Agent、问医生、专科医生、连续随访或复杂资料整合诉求。
+  medium:
+    - 主回答后存在明显医生服务、专科咨询或随访承接价值。
+  weak:
+    - 简单健康问答、一次性轻症问题，无医生服务需求。
+
+entrypoints:
+  vita:
+    direct_answer: true
+    service_card: true
+    description: 健康管家医生 Agent 分发和服务卡承接。
+  baikan:
+    enabled: false
+    mode: []
+    description: 待确认是否进入百看分发。
+  quick_test:
+    enabled: true
+    mode:
+      - direct_answer
+      - service_card
+    description: 支持医生 Agent 分发、专科服务和连续随访测试。
+  skill_supply:
+    enabled: true
+    target:
+      - health_agent
+      - doctor_agent_flow
+
+product:
+  framework: health_skill_registration_v1
+  difference_from_vita: []
+  demo:
+    images: []
+    url: null
+  current_stage: pipeline_draft
+
+service_card:
+  enabled: true
+  card_type:
+    - service_large
+    - followup_bubbles
+  title: 进入疾风医生智能体
+  subtitle: 适合复杂问题、专科咨询、多资料整合和连续随访。
+  cta: 问医生
+  target:
+    type: skill
+    url: null
+  trigger_policy:
+    show_after_main_answer: true
+    max_per_session: 1
+    avoid_when_direct_answer: false
+
+dependencies: []
+notes:
+  - 本 Skill 更偏分发和服务承接，不应替代急症线下就医提示。
+  - 疾风命名、服务入口和可用专科范围需要产品侧确认。
+
+generated:
+  from: SKILL.md
+  reviewed: false
+  generated_at: 2026-06-11
+  needs_review:
+    - owner
+    - service_entry
+    - available_specialties
+    - baikan.enabled
+    - product.demo.url

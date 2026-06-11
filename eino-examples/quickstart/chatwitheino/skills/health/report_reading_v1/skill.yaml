@@ -1,0 +1,129 @@
+id: report_reading_v1
+name: report_reading_v1
+display_name: 医学报告单解读
+domain: report
+owner: zhoujiyi
+version: v1.0
+status: draft
+
+short_description: 医学报告单图片的 OCR、分层解读、严重度判断和后续处置建议 Skill。
+description: >-
+  当用户上传医学报告单图片，或围绕化验单、影像报告、病理报告、体检报告、产检报告等报告内容提问时触发。
+  支持仅发图、带具体诉求、多轮主诉承接，并按意图与严重度切换报告解读、诊断判断、严重度研判和处置建议结构。
+capabilities:
+  - 医学报告单图片 OCR 与结构化提取
+  - 报告类型、异常项和严重度分层解读
+  - 围绕报告进行诊断判断、严重度研判和处置建议
+  - 多轮主诉与报告发现关联解释
+  - 输出医生服务、图片上传引导和后续追问卡片
+
+routing:
+  direct_answer:
+    enabled: true
+    priority: 95
+    description: 用户上传报告单图片，或明确要求解读报告、化验单、检查结果时，直接由本 Skill 回答。
+    query_intents:
+      - 仅上传医学报告单图片并希望看看或解读
+      - 询问报告是否严重、数值高不高、会不会影响健康
+      - 基于报告问是不是某种病、什么意思、下一步怎么办
+      - 多轮中用户补充报告图片，希望结合主诉继续判断
+    examples:
+      - 帮我解读这张报告单，严重吗？
+      - 这个检查结果是不是有问题？
+      - 甲状腺报告显示这个结节要不要手术？
+      - 我只发一张化验单，你帮我看看。
+  service_card:
+    enabled: true
+    priority: 75
+    description: 用户未上传报告图片、报告存在中重度异常、或回答后适合推荐专科医生/后续追问时出卡。
+    query_intents:
+      - 用户首次进入报告场景但未上传图片
+      - 报告有中度或重度异常，需要专科医生承接
+      - 每轮解读后推荐深度解读、就诊路径或生活方式追问
+    examples:
+      - 我想看报告，但图片还没传
+      - 这个结果需要找医生吗？
+
+preconditions: []
+
+demand_scenarios:
+  strong:
+    - 用户上传医学报告单图片并要求解读、判断严重度或给下一步建议。
+    - 用户围绕报告指标、检查结论、影像/病理/体检结果追问。
+  medium:
+    - 用户表达想看报告但未上传图片，需要引导上传。
+    - 报告解读后存在中重度异常或明确医生服务承接价值。
+  weak:
+    - 用户上传的是皮肤照、舌苔照、普通生活照片等非报告单图片。
+    - 用户只问药品、副作用、饮食、营养方案且不基于报告。
+
+entrypoints:
+  vita:
+    direct_answer: true
+    service_card: true
+    description: 文心健康管家医学报告解读与报告图片入口。
+  baikan:
+    enabled: false
+    mode: []
+    description: 待确认是否进入百看分发。
+  quick_test:
+    enabled: true
+    mode:
+      - direct_answer
+      - service_card
+    description: 支持报告样本图、多轮报告解读和图片上传测试。
+  skill_supply:
+    enabled: true
+    target:
+      - health_agent
+      - report_flow
+
+tools:
+  - report_ocr_extract
+  - medical_term_explain
+
+product:
+  framework: health_skill_registration_v1
+  difference_from_vita: []
+  demo:
+    images:
+      - /assets/report-samples/report-sample-1.jpg
+      - /assets/report-samples/report-sample-2.jpg
+      - /assets/report-samples/report-sample-3.jpeg
+    url: null
+  current_stage: demo
+
+service_card:
+  enabled: true
+  card_type:
+    - service_large
+    - multimodal_large
+    - followup_bubbles
+  title: 继续解读报告
+  subtitle: 可上传报告图片、查看就诊路径或继续追问关键异常项。
+  cta: 继续解读
+  target:
+    type: skill
+    url: null
+  trigger_policy:
+    show_after_main_answer: true
+    max_per_session: 2
+    avoid_when_direct_answer: false
+
+dependencies:
+  - report_ocr_extract
+  - medical_term_explain
+notes:
+  - 报告单图片强需求优先级高于通用健康问答。
+  - 非报告单图片不应触发本 Skill，应交由对应图像/专科 Skill。
+
+generated:
+  from: SKILL.md
+  reviewed: false
+  generated_at: 2026-06-11
+  needs_review:
+    - baikan.enabled
+    - service_card.title
+    - service_card.max_per_session
+    - product.demo.url
+    - report_image_type_boundary

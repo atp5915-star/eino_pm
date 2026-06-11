@@ -774,6 +774,25 @@ async function copyTraceTurn(turn, btn) {
   }
 }
 
+function skillDisplayName(skill) {
+  return SKILL_DISPLAY_NAMES[skill] || skill;
+}
+
+function extractSkillFromTrace(value) {
+  if (!value) return '';
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return typeof parsed.skill === 'string' ? parsed.skill : '';
+    } catch (_) {
+      const match = value.match(/"skill"\s*:\s*"([^"]+)"/);
+      return match ? match[1] : '';
+    }
+  }
+  if (typeof value === 'object' && typeof value.skill === 'string') return value.skill;
+  return '';
+}
+
 function compactTraceData(data) {
   if (!data || typeof data !== 'object') return data;
   if (Array.isArray(data)) return data.map(compactTraceData);
@@ -792,6 +811,8 @@ function compactTraceData(data) {
       out[key] = compactTraceData(value);
     }
   }
+  const skill = extractSkillFromTrace(out.args) || extractSkillFromTrace(out.input) || (typeof out.skill === 'string' ? out.skill : '');
+  if (skill && !out.skillDisplayName) out.skillDisplayName = skillDisplayName(skill);
   return out;
 }
 
@@ -844,47 +865,71 @@ function loadReportSampleImages() {
 }
 
 const REPORT_SAMPLE_IMAGES = loadReportSampleImages().slice(0, 5);
+const SKILL_DISPLAY_NAMES = {
+  skin_diagnosis_v1: '皮肤诊断与方向判断',
+  skin_collection_v1: '皮肤病情采集',
+  skin_care_plan_v1: '皮肤护理与治疗方案',
+  doctor_voice_answer_v2: '值班医生口吻健康问答',
+  report_reading_v1: '医学报告单解读',
+  lung_cancer_v1: '【管线】肺癌风险与诊疗路径',
+  weight_loss_v1: '【管线】减肥与体重管理',
+  medical_visit_v1: '【管线】就医决策与挂号路径',
+  maxillofacial_v1: '【管线】颌面外科与口腔颌面问题',
+  tcm_v1: '【管线】中医调理与辨证建议',
+  jifeng_doctor_agent_v1: '【管线】疾风医生智能体',
+  consumer_medical_v1: '【管线】消费医疗与健康服务决策',
+};
+const skillGroup = skill => `${SKILL_DISPLAY_NAMES[skill] || skill}（${skill}）`;
 const REPORT_IMAGE_QUERIES = REPORT_SAMPLE_IMAGES.length ? [
-  { group: 'Skill 调度：report_reading_v1', tag: '样本图 1', text: '帮我解读这张报告单，重点说严重不严重', images: [REPORT_SAMPLE_IMAGES[0]] },
-  { group: 'Skill 调度：report_reading_v1', tag: '样本图 2', text: '这份检查报告有什么异常？下一步怎么办？', images: [REPORT_SAMPLE_IMAGES[1] || REPORT_SAMPLE_IMAGES[0]] },
-  { group: 'Skill 调度：report_reading_v1', tag: '样本图 3', text: '帮我看下这份报告，需要挂什么科复查？', images: [REPORT_SAMPLE_IMAGES[2] || REPORT_SAMPLE_IMAGES[0]] },
+  { group: skillGroup('report_reading_v1'), tag: '强需｜样本图 1', text: '帮我解读这张报告单，重点说严重不严重', images: [REPORT_SAMPLE_IMAGES[0]] },
+  { group: skillGroup('report_reading_v1'), tag: '强需｜样本图 2', text: '这份检查报告有什么异常？下一步怎么办？', images: [REPORT_SAMPLE_IMAGES[1] || REPORT_SAMPLE_IMAGES[0]] },
+  { group: skillGroup('report_reading_v1'), tag: '强需｜样本图 3', text: '帮我看下这份报告，需要挂什么科复查？', images: [REPORT_SAMPLE_IMAGES[2] || REPORT_SAMPLE_IMAGES[0]] },
 ] : [];
 
 const RECOMMENDED_QUERIES = [
-  { group: 'Skill 调度：skin_diagnosis_v1', tag: '首轮诊断', text: '手臂上起了一片红疹，很痒，是怎么回事？' },
-  { group: 'Skill 调度：skin_diagnosis_v1', tag: '皮肤亚健康', text: '脚越抓越痒是什么原因？' },
-  { group: 'Skill 调度：skin_diagnosis_v1', tag: '隐私风险', text: '下面长了几个小疙瘩，好怕是不是性病' },
-  { group: 'Skill 调度：skin_collection_v1', tag: '采集链路首轮', text: '手指上长了一些小水泡，很痒' },
-  { group: 'Skill 调度：skin_collection_v1', tag: '采集链路二轮', text: '两只手都有，换季更明显' },
-  { group: 'Skill 调度：skin_collection_v1', tag: '补充定位', text: '像一圈，边缘更明显，还有点脱皮' },
-  { group: 'Skill 调度：skin_care_plan_v1', tag: '湿疹方案', text: '我得了湿疹，最近很痒，应该怎么治？' },
-  { group: 'Skill 调度：skin_care_plan_v1', tag: '足癣用药', text: '脚气反复发作，达克宁用了没效果，怎么办？' },
-  { group: 'Skill 调度：skin_care_plan_v1', tag: '毛囊炎方案', text: '下体长了一个毛囊炎怎么办？' },
-  { group: 'Skill 调度：doctor_voice_answer_v2', tag: '症状病因', text: '嗓子疼三天了，是怎么回事？' },
-  { group: 'Skill 调度：doctor_voice_answer_v2', tag: '二元判断', text: '感冒了能吃鸡蛋吗？' },
-  { group: 'Skill 调度：doctor_voice_answer_v2', tag: '指标解读', text: '体检肌酐 120 严重吗？' },
-  { group: 'Skill 调度：doctor_voice_answer_v2', tag: '中草药功效', text: '奶蓟草护肝是真的吗？' },
-  { group: 'Skill 调度：report_reading_v1', tag: '无图上传引导', text: '帮我看看检查报告' },
+  { group: skillGroup('skin_diagnosis_v1'), tag: '强需｜首轮诊断', text: '手臂上起了一片红疹，很痒，是怎么回事？' },
+  { group: skillGroup('skin_diagnosis_v1'), tag: '强需｜隐私风险', text: '下面长了几个小疙瘩，好怕是不是性病' },
+  { group: skillGroup('skin_diagnosis_v1'), tag: '中需｜补图承接', text: '皮肤有点不舒服，要不要拍张照片给你看？' },
+  { group: skillGroup('skin_collection_v1'), tag: '强需｜诊断后采集', text: '两只手都有小水泡，换季更明显，下一步还需要补充什么？' },
+  { group: skillGroup('skin_collection_v1'), tag: '中需｜图片采集', text: '刚才说的红疹，我需要怎么拍照你才好判断？' },
+  { group: skillGroup('skin_care_plan_v1'), tag: '强需｜湿疹方案', text: '我得了湿疹，最近很痒，应该怎么治？' },
+  { group: skillGroup('skin_care_plan_v1'), tag: '强需｜足癣用药', text: '脚气反复发作，达克宁用了没效果，怎么办？' },
+  { group: skillGroup('skin_care_plan_v1'), tag: '中需｜医生承接', text: '这个皮肤问题要不要找皮肤科医生再看看？' },
+  { group: skillGroup('doctor_voice_answer_v2'), tag: '强需｜二元判断', text: '感冒了能吃鸡蛋吗？' },
+  { group: skillGroup('doctor_voice_answer_v2'), tag: '强需｜指标解读', text: '体检肌酐 120 严重吗？' },
+  { group: skillGroup('doctor_voice_answer_v2'), tag: '中需｜补充追问', text: '嗓子疼三天了，是怎么回事？' },
+  { group: skillGroup('report_reading_v1'), tag: '强需｜无图上传引导', text: '帮我看看检查报告' },
   ...REPORT_IMAGE_QUERIES,
-  { group: 'Skill 调度：report_reading_v1', tag: '严重度判断', text: '我这份化验单有几项偏高，严重吗？' },
-  { group: 'Skill 调度：report_reading_v1', tag: '影像鉴别', text: 'CT 报告写 5 点钟方位软组织影，这是肛瘘吗？' },
-  { group: 'Skill 调度：report_reading_v1', tag: '处置建议', text: '病理报告写 D-TGCT，下一步应该怎么治疗和复查？' },
-  { group: '回答策略', tag: '表格/检查', text: '脑肠轴紊乱需要做什么检查？' },
-  { group: '回答策略', tag: '风险判断', text: '高血压会偏头痛吗？' },
-  { group: '回答策略', tag: '用药安全', text: '一岁小朋友吃布洛芬可以吗？' },
-  { group: '回答策略', tag: '饮食建议', text: '没有基础病，日常饮食怎么吃更健康？' },
-  { group: '医疗大卡', tag: '真人咨询', text: '我要在线问医生' },
-  { group: '医疗大卡', tag: '精准找医生', text: '我想咨询肠胃专家' },
-  { group: '医疗大卡', tag: '药品卡', text: '我想买感冒颗粒胶囊' },
-  { group: '医疗大卡', tag: '医院/挂号', text: '推荐上海治疗乙肝医院' },
-  { group: '服务追问', tag: '药品+追问', text: '一岁小朋友吃布洛芬' },
-  { group: '服务追问', tag: '报告解读', text: '帮我看看检查报告' },
-  { group: '服务追问', tag: '皮肤检测', text: '皮肤起疹子怎么办？' },
-  { group: '服务追问', tag: '饮食计划', text: '苹果有什么健康作用？' },
-  { group: '风险场景', tag: '急诊提醒', text: '突然胸口疼还喘不上气怎么办？' },
-  { group: '风险场景', tag: '儿童发热', text: '孩子发烧到40度还一直没精神怎么办？' },
-  { group: '长期管理', tag: '慢病复查', text: '高血压患者多久复查一次？' },
-  { group: '长期管理', tag: '用药计划', text: '我总是忘记吃降压药怎么办？' }
+  { group: skillGroup('report_reading_v1'), tag: '强需｜严重度判断', text: '我这份化验单有几项偏高，严重吗？' },
+  { group: skillGroup('report_reading_v1'), tag: '强需｜处置建议', text: '病理报告写 D-TGCT，下一步应该怎么治疗和复查？' },
+  { group: skillGroup('report_reading_v1'), tag: '中需｜上传承接', text: '我想看体检报告，但现在还没传图片' },
+  { group: skillGroup('lung_cancer_v1'), tag: '强需｜肺结节判断', text: '肺部磨玻璃结节 8mm，严重吗？会不会是肺癌？' },
+  { group: skillGroup('lung_cancer_v1'), tag: '强需｜术后随访', text: '肺癌术后多久复查一次？需要查哪些项目？' },
+  { group: skillGroup('lung_cancer_v1'), tag: '中需｜筛查承接', text: '我爸抽烟三十年了，要不要做肺癌筛查？' },
+  { group: skillGroup('weight_loss_v1'), tag: '强需｜减重方案', text: '我 165cm 70kg，想健康减肥，应该怎么开始？' },
+  { group: skillGroup('weight_loss_v1'), tag: '强需｜减肥食谱', text: '帮我做一个减肥食谱，最好能安排一周三餐' },
+  { group: skillGroup('weight_loss_v1'), tag: '强需｜健身计划', text: '我想减脂，帮我制定一个新手健身计划' },
+  { group: skillGroup('weight_loss_v1'), tag: '强需｜食谱打卡', text: '我想每天记录吃了什么，帮我做食谱打卡和复盘' },
+  { group: skillGroup('weight_loss_v1'), tag: '强需｜训练打卡', text: '我想坚持运动减脂，帮我做训练打卡计划' },
+  { group: skillGroup('weight_loss_v1'), tag: '强需｜药物减重', text: '司美格鲁肽减肥能不能用？有什么风险？' },
+  { group: skillGroup('weight_loss_v1'), tag: '中需｜代谢承接', text: '体检有脂肪肝，医生说最好控制体重，我该怎么做？' },
+  { group: skillGroup('weight_loss_v1'), tag: '中需｜热量识别', text: '这份外卖热量是不是很高？能不能拍照帮我识别一下？' },
+  { group: skillGroup('weight_loss_v1'), tag: '中需｜BMI 计算', text: '我 170cm 78kg，算胖吗？需要减多少？' },
+  { group: skillGroup('medical_visit_v1'), tag: '强需｜挂什么科', text: '最近总是头晕，想去医院看看，应该挂什么科？' },
+  { group: skillGroup('medical_visit_v1'), tag: '强需｜急诊判断', text: '突然胸口疼还喘不上气，现在要不要去急诊？' },
+  { group: skillGroup('medical_visit_v1'), tag: '中需｜路径承接', text: '这个情况如果去医院，需要提前准备哪些检查和资料？' },
+  { group: skillGroup('maxillofacial_v1'), tag: '强需｜智齿肿痛', text: '智齿发炎脸都肿了，张嘴也疼，怎么办？' },
+  { group: skillGroup('maxillofacial_v1'), tag: '强需｜颞下颌关节', text: '张嘴的时候下巴会弹响，颞下颌关节是不是有问题？' },
+  { group: skillGroup('maxillofacial_v1'), tag: '中需｜专科承接', text: '牙痛还带着半边脸肿，要不要看口腔颌面外科？' },
+  { group: skillGroup('tcm_v1'), tag: '强需｜体质调理', text: '我总觉得湿气重、舌苔厚白，中医上怎么调理？' },
+  { group: skillGroup('tcm_v1'), tag: '强需｜中成药', text: '逍遥丸适合肝郁的人吃吗？我能不能试试？' },
+  { group: skillGroup('tcm_v1'), tag: '中需｜调理承接', text: '睡眠不好、容易累，想从中医角度调一下' },
+  { group: skillGroup('jifeng_doctor_agent_v1'), tag: '强需｜问医生', text: '我想找医生详细看看这个问题，可以进入医生智能体吗？' },
+  { group: skillGroup('jifeng_doctor_agent_v1'), tag: '强需｜连续随访', text: '我有好几份报告和症状，想让医生持续跟进分析' },
+  { group: skillGroup('jifeng_doctor_agent_v1'), tag: '中需｜服务承接', text: '这个问题比较复杂，后面能不能让专科医生继续看？' },
+  { group: skillGroup('consumer_medical_v1'), tag: '强需｜体检套餐', text: '我 35 岁，想买体检套餐，应该怎么选？' },
+  { group: skillGroup('consumer_medical_v1'), tag: '强需｜项目决策', text: '近视手术适合我吗？应该怎么判断风险？' },
+  { group: skillGroup('consumer_medical_v1'), tag: '中需｜服务承接', text: '血脂有点高，后续有没有适合我的健康管理服务？' }
 ];
 
 function renderRecommendedQueries() {
@@ -975,6 +1020,34 @@ const SERVICE_CARDS = {
     target: 'service://diet-plan',
     icon: 'diet'
   },
+  weight_recipe: {
+    title: '减肥食谱',
+    desc: '按目标热量生成一日三餐',
+    buttonText: '生成食谱',
+    target: 'service://weight-recipe',
+    icon: 'diet'
+  },
+  fitness_plan: {
+    title: '健身计划',
+    desc: '按运动基础安排减脂训练',
+    buttonText: '制定计划',
+    target: 'service://fitness-plan',
+    icon: 'fitness'
+  },
+  meal_checkin: {
+    title: '食谱打卡',
+    desc: '记录饮食执行，复盘热量结构',
+    buttonText: '去打卡',
+    target: 'service://meal-checkin',
+    icon: 'checkin'
+  },
+  training_checkin: {
+    title: '训练打卡',
+    desc: '记录训练完成度，持续调整计划',
+    buttonText: '去打卡',
+    target: 'service://training-checkin',
+    icon: 'fitness'
+  },
   archive: {
     title: '保存至健康档案',
     desc: '沉淀健康记录，方便持续管理',
@@ -998,7 +1071,9 @@ const SERVICE_ICON_SVGS = {
   skin: '<svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="17" fill="#FFE9EF"/><path d="M18 25c2-7 10-7 12 0 2 6-3 10-6 10s-8-4-6-10Z" fill="#FF9DB6"/><circle cx="20" cy="17" r="2" fill="#FF6F94"/><circle cx="29" cy="19" r="2.5" fill="#FF6F94"/></svg>',
   diet: '<svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="18" fill="#FFF1CF"/><path d="M24 24 36 13a18 18 0 0 1 2 21L24 24Z" fill="#FF8B5C"/><path d="M24 24 11 35a18 18 0 0 1-3-11h16Z" fill="#8DDD77"/><path d="M24 24V6a18 18 0 0 1 12 7L24 24Z" fill="#FFD75C"/></svg>',
   archive: '<svg viewBox="0 0 48 48" fill="none"><rect x="10" y="12" width="28" height="26" rx="5" fill="#E9F8FF"/><path d="M16 12h16l-2-5H18l-2 5Z" fill="#9EEBFF"/><path d="M24 20v10M19 25h10" stroke="#00BFC8" stroke-width="3" stroke-linecap="round"/></svg>',
-  medication: '<svg viewBox="0 0 48 48" fill="none"><rect x="12" y="18" width="24" height="18" rx="9" fill="#DDF6FF"/><path d="M24 18v18" stroke="#00BFC8" stroke-width="3"/><circle cx="17" cy="12" r="4" fill="#9EEBFF"/><circle cx="31" cy="12" r="4" fill="#00C8C8"/></svg>'
+  medication: '<svg viewBox="0 0 48 48" fill="none"><rect x="12" y="18" width="24" height="18" rx="9" fill="#DDF6FF"/><path d="M24 18v18" stroke="#00BFC8" stroke-width="3"/><circle cx="17" cy="12" r="4" fill="#9EEBFF"/><circle cx="31" cy="12" r="4" fill="#00C8C8"/></svg>',
+  fitness: '<svg viewBox="0 0 48 48" fill="none"><rect x="8" y="20" width="7" height="8" rx="3" fill="#9EEBFF"/><rect x="33" y="20" width="7" height="8" rx="3" fill="#00C8C8"/><path d="M15 24h18" stroke="#00BFC8" stroke-width="5" stroke-linecap="round"/><path d="M22 15c5 1 8 5 9 10M26 33c-5-1-8-5-9-10" stroke="#7AD66D" stroke-width="3" stroke-linecap="round"/></svg>',
+  checkin: '<svg viewBox="0 0 48 48" fill="none"><rect x="10" y="8" width="28" height="32" rx="7" fill="#E9F8FF"/><path d="M17 24l5 5 10-12" stroke="#00BFC8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 8h12v6H18z" fill="#9EEBFF"/></svg>'
 };
 
 const MEDICAL_MOCK = {
@@ -1154,13 +1229,30 @@ function renderFollowupBubblesCard(card) {
   const bubbles = (card.bubbles || []).map(item => typeof item === 'string' ? { text: item } : item).filter(item => item && item.text);
   if (!bubbles.length) return '';
   addTrace('UI_CARD', { cardType: 'followup_bubbles', source: 'skill_card_parser', items: bubbles.map(item => item.text) });
-  return `<div class="service-prompt-list skill-followups">${bubbles.map(item => `<button class="service-prompt-chip" data-prompt="${attrEsc(item.text)}" onclick="handleServicePromptClick(this)"><span>${esc(item.text)}</span></button>`).join('')}</div>`;
+  return `<div class="service-prompt-list skill-followups">${bubbles.map(item => `<button class="service-prompt-chip" data-prompt="${attrEsc(item.prompt || item.text)}" onclick="handleServicePromptClick(this)"><span>${esc(item.text)}</span></button>`).join('')}</div>`;
+}
+
+function renderServiceMountCard(card) {
+  const firstService = (card.services || [])[0];
+  if (!firstService) return '';
+  const preset = SERVICE_CARDS[firstService.key] || {};
+  const service = {
+    key: firstService.key,
+    title: firstService.title || preset.title || '健康服务',
+    desc: firstService.desc || firstService.description || preset.desc || '',
+    cta: firstService.cta || firstService.buttonText || preset.buttonText || '去使用',
+    target: firstService.target || preset.target || `service://${firstService.key || 'health-service'}`,
+    icon: firstService.icon || preset.icon || 'diet',
+  };
+  addTrace('UI_CARD', { cardType: 'service_mount', source: 'skill_card_parser', services: [service.key || service.title] });
+  return `<div class="skill-service-mounts" data-card-type="service_mount">${renderServiceCard(service)}</div>`;
 }
 
 function renderSkillCard(card) {
   if (!card || !card.card_type) return '';
   if (card.card_type === 'multimodal_large') return renderMultimodalLargeCard(card);
   if (card.card_type === 'followup_bubbles') return renderFollowupBubblesCard(card);
+  if (card.card_type === 'service_mount') return renderServiceMountCard(card);
   return '';
 }
 
@@ -1195,11 +1287,16 @@ const SERVICE_PROMPTS = {
 
 function chooseServicePrompts(text) {
   const value = String(text || '');
+  if (/减肥|减重|瘦|体重|BMI|脂肪肝|体脂|热量|卡路里|食谱|健身|训练|运动|打卡|外卖|奶茶|零食/.test(value)) return ['拍照识别这餐热量', '帮我计算 BMI', '今天饮食怎么打卡'];
   if (/布洛芬|药|胶囊|退热|止痛|用药|发热|发烧/.test(value)) return ['doctor', '我这种情况需要吃什么药', '头痛可以针灸治疗吗'];
   if (/报告|化验|体检|指标|检查/.test(value)) return ['report', '这些指标异常严重吗', '需要去医院复查吗'];
   if (/皮肤|皮疹|痘|湿疹|过敏/.test(value)) return ['skin', '这种皮疹需要用什么药', '需要去皮肤科就诊吗'];
   if (/饮食|食谱|营养|苹果|吃什么|减脂|控糖/.test(value)) return ['diet', '我适合吃哪些食物', '哪些食物需要少吃'];
   return ['doctor', '帮我看看检查报告', '帮我定制饮食计划'];
+}
+
+function shouldUsePromptBubbles(text) {
+  return /布洛芬|胶囊|退热|止痛|头痛|发热|发烧|报告|检查|皮肤|饮食|吃什么|用药|减肥|减重|瘦|体重|BMI|脂肪肝|体脂|热量|卡路里|食谱|健身|训练|运动|打卡|外卖|奶茶|零食/.test(String(text || ''));
 }
 
 function renderServicePromptBubbles(sourceText) {
@@ -1230,12 +1327,8 @@ function appendServicePrompts(sourceText) {
   scrollChat();
 }
 
-function shouldUsePromptBubbles(text) {
-  return /布洛芬|胶囊|退热|止痛|头痛|发热|发烧|报告|检查|皮肤|饮食|吃什么|用药/.test(String(text || ''));
-}
-
 function renderServiceCard(serviceKey) {
-  const card = SERVICE_CARDS[serviceKey] || SERVICE_CARDS.doctor;
+  const card = typeof serviceKey === 'string' ? (SERVICE_CARDS[serviceKey] || SERVICE_CARDS.doctor) : serviceKey;
   const icon = SERVICE_ICON_SVGS[card.icon] || SERVICE_ICON_SVGS.doctor;
   return `<div class="service-mount-card" data-target="${attrEsc(card.target)}" data-title="${attrEsc(card.title)}" onclick="handleServiceCardClick(this)">
     <div class="service-icon">${icon}</div>
@@ -1243,7 +1336,7 @@ function renderServiceCard(serviceKey) {
       <div class="service-title">${esc(card.title)}</div>
       <div class="service-desc">${esc(card.desc)}</div>
     </div>
-    <div class="service-action">${esc(card.buttonText)}</div>
+    <div class="service-action">${esc(card.buttonText || card.cta || '去使用')}</div>
   </div>`;
 }
 
@@ -1377,8 +1470,21 @@ function submitQuickTest(btn) {
   sendMessage(values.join('，'));
 }
 
+function chooseWeightServiceCards(text) {
+  const value = String(text || '');
+  const services = [];
+  if (/食谱|饮食计划|怎么吃|吃什么|控糖|轻断食|生酮|外卖|一日三餐|菜单/.test(value)) services.push('weight_recipe');
+  if (/健身|训练|运动计划|怎么练|力量|有氧|跑步|撸铁|减脂训练/.test(value)) services.push('fitness_plan');
+  if (/食谱打卡|饮食打卡|饮食记录|吃了什么|复盘|坚持吃|监督饮食/.test(value)) services.push('meal_checkin');
+  if (/训练打卡|运动打卡|记录运动|坚持训练|监督训练|平台期/.test(value)) services.push('training_checkin');
+  if (!services.length && /减肥|减重|瘦|体重|BMI|脂肪肝|体脂|热量|卡路里/.test(value)) services.push('weight_recipe');
+  return services.slice(0, 1);
+}
+
 function chooseServiceCard(text) {
   const value = String(text || '');
+  const weightCards = chooseWeightServiceCards(value);
+  if (weightCards.length) return weightCards[0];
   if (/布洛芬|药|胶囊|退热|止痛|用药|买药|购买/.test(value)) return 'drug';
   if (/医生|问诊|发热|疼痛|症状|病情|不适/.test(value)) return 'doctor';
   if (/报告|化验|体检|指标|检查/.test(value)) return 'report';
@@ -1394,9 +1500,14 @@ function enrichBotBubble(bubble, sourceText) {
   bubble.dataset.enriched = 'true';
   const medicalType = chooseMedicalCardType(sourceText);
   const serviceKey = chooseServiceCard(sourceText);
+  const weightServiceKeys = chooseWeightServiceCards(sourceText).slice(0, 1);
+  const hasSkillServiceMount = Boolean(bubble.querySelector('[data-card-type="service_mount"]'));
   const usePromptBubbles = shouldUsePromptBubbles(sourceText);
   let body = '';
-  if (medicalType) {
+  if (weightServiceKeys.length && !hasSkillServiceMount) {
+    addTrace('UI_CARD', { cardType: 'service_mount', source: 'frontend_enrichment', services: weightServiceKeys });
+    body = `<div class="skill-service-mounts" data-card-type="service_mount">${weightServiceKeys.map(renderServiceCard).join('')}</div>`;
+  } else if (medicalType) {
     addTrace('UI_CARD', { cardType: 'medical_service_large', source: 'frontend_enrichment', variant: medicalType });
     body = renderMedicalCard(medicalType);
   } else if (!usePromptBubbles) {

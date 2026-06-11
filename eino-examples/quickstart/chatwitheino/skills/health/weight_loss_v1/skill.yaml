@@ -1,0 +1,133 @@
+id: weight_loss_v1
+name: weight_loss_v1
+display_name: 【管线】减肥与体重管理
+domain: weight_management
+owner: pending
+version: v1.0
+status: draft
+
+short_description: 减肥、体重管理、饮食运动方案和医学减重专项 Skill。
+description: >-
+  当用户明确表达减肥、体重管理、饮食运动方案、平台期、反弹、药物减重或代谢风险管理诉求时触发。
+  强需求直接回答；中相关性命中时，以服务卡承接体重管理计划、营养/医生服务或长期管理方案。
+capabilities:
+  - 体重管理路径判断
+  - 饮食、运动和行为方案建议
+  - 药物减重适应证、禁忌和就医边界提示
+  - 代谢风险相关体重管理承接
+  - 减肥食谱、健身计划、食谱打卡、训练打卡服务挂载
+  - 拍照识别热量、BMI 计算服务追问
+
+routing:
+  direct_answer:
+    enabled: true
+    priority: 82
+    description: 用户明确问减肥、瘦身、体重管理、药物减重或制定方案时直接回答。
+    query_intents:
+      - 减肥方案、饮食运动计划、平台期和反弹处理
+      - BMI、体脂率、热量缺口、控糖等体重管理咨询
+      - 司美格鲁肽、替尔泊肽、奥利司他等药物减重咨询
+    examples:
+      - 我 165cm 70kg，怎么减肥？
+      - 司美格鲁肽减肥能不能用？
+      - 减肥平台期怎么办？
+  service_card:
+    enabled: true
+    priority: 62
+    description: 用户有体重管理价值但主诉是体检异常、代谢问题或慢病风险时，在主回答后出卡承接。
+    query_intents:
+      - 脂肪肝、血糖血脂异常、高尿酸、多囊等需要体重管理辅助
+      - 用户需要营养师、医生或长期计划服务
+    examples:
+      - 体检脂肪肝，医生说要减重
+      - 血糖高是不是要控制体重？
+
+demand_scenarios:
+  strong:
+    - 明确减肥、体重管理、药物减重或方案制定诉求。
+  medium:
+    - 代谢异常、慢病风险、体检异常中体重管理是重要干预项。
+  weak:
+    - 单纯饮食偏好、健身娱乐或非健康目的身材审美。
+
+entrypoints:
+  vita:
+    direct_answer: true
+    service_card: true
+    description: 健康管家减肥和体重管理入口。
+  baikan:
+    enabled: false
+    mode: []
+    description: 待确认是否进入百看分发。
+  quick_test:
+    enabled: true
+    mode:
+      - direct_answer
+      - service_card
+    description: 支持减肥方案、药物减重和代谢风险测试。
+  skill_supply:
+    enabled: true
+    target:
+      - health_agent
+      - weight_management_flow
+
+product:
+  framework: health_skill_registration_v1
+  difference_from_vita: []
+  demo:
+    images: []
+    url: null
+  current_stage: pipeline_draft
+
+service_card:
+  enabled: true
+  card_type:
+    - service_mount
+    - followup_bubbles
+  title: 体重管理服务
+  subtitle: 按当前意图挂载食谱、训练、打卡、热量识别和 BMI 计算能力。
+  cta: 开始管理
+  target:
+    type: skill
+    url: null
+  trigger_policy:
+    show_after_main_answer: true
+    max_per_session: 1
+    avoid_when_direct_answer: false
+  mount_policy:
+    max_cards_per_turn: 1
+    dedupe_with_frontend_enrichment: true
+    selection: 按用户当前最明确的意图只选择 1 个服务挂载小卡；不要一次输出多个服务小卡。
+  mount_services:
+    - key: weight_recipe
+      title: 减肥食谱
+      trigger: 问怎么吃、吃什么、食谱、饮食计划、控糖、轻断食、生酮、外卖选择，或需要把饮食框架落成每日菜单。
+    - key: fitness_plan
+      title: 健身计划
+      trigger: 问怎么练、运动计划、减脂训练、力量训练、有氧安排，或需要结合运动建立热量缺口。
+    - key: meal_checkin
+      title: 食谱打卡
+      trigger: 已有食谱/饮食方案，或表达想坚持、记录、监督、饮食复盘。
+    - key: training_checkin
+      title: 训练打卡
+      trigger: 已有运动计划，或表达想坚持训练、记录运动、监督打卡、平台期需要调整训练。
+  followup_bubbles:
+    - text: 拍照识别这餐热量
+      trigger: 提到一餐、菜、外卖、零食、奶茶、火锅、聚餐、食物热量不确定，或问这个能不能吃/热量高不高。
+    - text: 帮我计算 BMI
+      trigger: 给出身高体重、只给部分身高体重信息、问胖不胖/标准体重/需要减多少斤，或需要先判断减重必要性。
+
+dependencies: []
+notes:
+  - 药物减重相关回答必须保留医生评估和复诊监测边界。
+
+generated:
+  from: SKILL.md
+  reviewed: false
+  generated_at: 2026-06-11
+  needs_review:
+    - owner
+    - baikan.enabled
+    - service_card.title
+    - product.demo.url
+    - medication_boundary

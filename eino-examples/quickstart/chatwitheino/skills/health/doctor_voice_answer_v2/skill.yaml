@@ -1,0 +1,121 @@
+id: doctor_voice_answer_v2
+name: doctor_voice_answer_v2
+display_name: 值班医生口吻健康问答
+domain: ideal-answer
+owner: wangxiaoying
+version: v2.0
+status: draft
+
+short_description: 面向任意健康问题的值班医生口吻高质量直接回答 Skill。
+description: >-
+  当用户提出健康相关问题，希望得到像资深临床医生当面回答一样的直接判断、具体边界和可执行建议时触发。
+  覆盖症状、疾病、用药、检查、饮食、中草药功效、就医决策等常见健康问答，并内置 topic/intent 分类与维度先验。
+capabilities:
+  - 通用健康问题医生口吻回答
+  - 健康话题与用户意图分类
+  - 基于话题/意图先验补齐关键回答维度
+  - 二元健康问题第一句硬判断
+  - 需要时生成少量关键追问或快捷回复
+
+routing:
+  direct_answer:
+    enabled: true
+    priority: 70
+    description: 用户提出健康相关问题，且没有更垂直专科 Skill 明确接管时，由本 Skill 直接给医生口吻回答。
+    query_intents:
+      - 症状、疾病、用药、检查、饮食、中草药功效、就医决策等健康咨询
+      - 用户希望获得直接判断而不是百科式科普
+      - 能不能、严重不严重、会不会传染、要不要就医等二元判断问题
+      - 未命中更垂直专科 Skill 的通用健康问答
+    examples:
+      - 低烧两天要不要去医院？
+      - 这个药能和布洛芬一起吃吗？
+      - 体检发现尿酸高严重吗？
+      - 孕期能不能喝咖啡？
+  service_card:
+    enabled: true
+    priority: 45
+    description: 主回答后需要补充少量信息才能更准确判断时，可出快捷追问卡片。
+    query_intents:
+      - 第一句判断已给出，但仍需补充关键分支信息
+      - 用户问题涉及多种可能，需要 1-2 个追问明确场景
+    examples:
+      - 你发烧最高多少度？有没有胸闷？
+
+preconditions: []
+
+demand_scenarios:
+  strong:
+    - 用户提出任意健康相关咨询，且需要临床医生式直接判断和行动边界。
+    - 用户问题没有被报告解读、皮肤、专科医生工作台等垂直 Skill 更准确覆盖。
+  medium:
+    - 主回答后需要补一个关键追问或快捷选择，帮助下一轮更精确。
+  weak:
+    - 非健康问题。
+    - 用户已进入严肃专科工作台或明确需要垂直专科 Skill。
+
+entrypoints:
+  vita:
+    direct_answer: true
+    service_card: true
+    description: 文心健康管家通用健康问答兜底和高质量医生口吻回答入口。
+  baikan:
+    enabled: false
+    mode: []
+    description: 待确认是否进入百看分发。
+  quick_test:
+    enabled: true
+    mode:
+      - direct_answer
+      - service_card
+    description: 支持通用健康问答、二元判断和就医决策测试。
+  skill_supply:
+    enabled: true
+    target:
+      - health_agent
+      - general_health_qa
+
+tools:
+  - classify_cell
+  - cell_priors_lookup
+
+product:
+  framework: health_skill_registration_v1
+  difference_from_vita: []
+  demo:
+    images: []
+    url: null
+  current_stage: demo
+
+service_card:
+  enabled: true
+  card_type:
+    - quick_test
+  title: 补充关键信息
+  subtitle: 再补 1-2 个信息，健康管家可以判断得更准。
+  cta: 去补充
+  target:
+    type: skill
+    url: null
+  trigger_policy:
+    show_after_main_answer: true
+    max_per_session: 1
+    avoid_when_direct_answer: false
+
+dependencies:
+  - classify_cell
+  - cell_priors_lookup
+notes:
+  - 本 Skill 是通用健康问答能力，不应覆盖已有明确垂直专科 Skill 的强需求。
+  - 反例包括非健康问题，以及已经进入严肃中医辨证开方等专科工作台的场景。
+
+generated:
+  from: SKILL.md
+  reviewed: false
+  generated_at: 2026-06-11
+  needs_review:
+    - routing.direct_answer.priority
+    - vertical_skill_precedence
+    - baikan.enabled
+    - service_card.max_per_session
+    - product.demo.url

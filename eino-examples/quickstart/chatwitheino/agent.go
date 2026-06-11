@@ -105,6 +105,8 @@ func healthSkillSystemPrompt(_ context.Context, toolName string) string {
 
 特别注意：医学报告单/化验单/影像报告/病理报告/体检报告/产检报告相关解读，例如“帮我看看检查报告”“这份化验单严重吗”“CT 报告是不是肛瘘”“病理报告下一步怎么办”等，必须调用 report_reading_v1，参数为 {"skill":"report_reading_v1"}。如果当前没有真实图片，先基于用户文字说明给上传引导，不要编造图片内容。
 
+管线 Skill 调度：肺癌/肺结节相关调用 lung_cancer_v1；减肥/体重管理/药物减重调用 weight_loss_v1；就医决策/挂号/急诊门诊调用 medical_visit_v1；颌面外科/智齿/颌骨/颞下颌关节调用 maxillofacial_v1；中医调理/体质/舌象/中成药调用 tcm_v1；明确想问医生/医生智能体/连续随访调用 jifeng_doctor_agent_v1；体检套餐/疫苗/齿科/眼科/医美/康复等消费医疗服务决策调用 consumer_medical_v1。
+
 调用 Skill 后，根据工具返回的完整 Skill 说明继续回答用户。
 
 Markdown 输出要求：使用粗体时必须写成 **关键词**，闭合的 ** 前后不要插入多余空格；不要输出 **关键词 **、** 关键词** 或空的 **** 这类非标准写法。标题必须短，只能是 4-12 个字的小节名，例如“需要就医的情况”“为什么会反复”“下一步建议”；不要把判断、原因、症状列表或整段解释写进标题，长内容必须放到标题下面的自然段或列表里。`, toolName)
@@ -121,13 +123,13 @@ func healthSkillToolDescription(_ context.Context, skills []skill.FrontMatter) s
 		builder.WriteString(strings.TrimSpace(item.Description))
 		builder.WriteString("\n")
 	}
-	builder.WriteString("\n强制路由示例：用户说‘脚越抓越痒是什么原因？’、‘手臂红疹很痒’、‘身上起疙瘩怎么办’时，调用参数必须是 {\"skill\":\"skin_diagnosis_v1\"}。用户说‘帮我看看检查报告’、‘这份化验单严重吗’、‘CT 报告是不是肛瘘’时，调用参数必须是 {\"skill\":\"report_reading_v1\"}。")
+	builder.WriteString("\n强制路由示例：用户说‘脚越抓越痒是什么原因？’、‘手臂红疹很痒’、‘身上起疙瘩怎么办’时，调用参数必须是 {\"skill\":\"skin_diagnosis_v1\"}。用户说‘帮我看看检查报告’、‘这份化验单严重吗’、‘CT 报告是不是肛瘘’时，调用参数必须是 {\"skill\":\"report_reading_v1\"}。用户说‘肺结节严重吗’调用 {\"skill\":\"lung_cancer_v1\"}；‘怎么减肥’调用 {\"skill\":\"weight_loss_v1\"}；‘挂什么科’调用 {\"skill\":\"medical_visit_v1\"}；‘智齿脸肿’调用 {\"skill\":\"maxillofacial_v1\"}；‘湿气重怎么调’调用 {\"skill\":\"tcm_v1\"}；‘想问医生’调用 {\"skill\":\"jifeng_doctor_agent_v1\"}；‘体检套餐怎么选’调用 {\"skill\":\"consumer_medical_v1\"}。")
 	return builder.String()
 }
 
 func healthSkillToolParams(_ context.Context, defaults map[string]*schema.ParameterInfo) (map[string]*schema.ParameterInfo, error) {
-	defaults["skill"].Desc = "要调用的健康 Skill 名称。皮肤/体表/脚部瘙痒、红疹、脱皮、皮损原因等首轮诊断问题必须填 skin_diagnosis_v1；医学报告单/化验单/影像报告/病理报告解读问题必须填 report_reading_v1。"
-	defaults["skill"].Enum = []string{"skin_diagnosis_v1", "skin_collection_v1", "skin_care_plan_v1", "doctor_voice_answer_v2", "report_reading_v1"}
+	defaults["skill"].Desc = "要调用的健康 Skill 名称。皮肤/体表症状填 skin_diagnosis_v1；医学报告单解读填 report_reading_v1；肺癌/肺结节填 lung_cancer_v1；减肥/体重管理填 weight_loss_v1；就医/挂号填 medical_visit_v1；颌面外科填 maxillofacial_v1；中医调理填 tcm_v1；问医生/医生智能体填 jifeng_doctor_agent_v1；消费医疗服务决策填 consumer_medical_v1。"
+	defaults["skill"].Enum = []string{"skin_diagnosis_v1", "skin_collection_v1", "skin_care_plan_v1", "doctor_voice_answer_v2", "report_reading_v1", "lung_cancer_v1", "weight_loss_v1", "medical_visit_v1", "maxillofacial_v1", "tcm_v1", "jifeng_doctor_agent_v1", "consumer_medical_v1"}
 	return defaults, nil
 }
 

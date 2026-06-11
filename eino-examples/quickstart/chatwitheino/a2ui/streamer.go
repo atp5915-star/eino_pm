@@ -17,6 +17,7 @@
 package a2ui
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -198,13 +199,7 @@ func streamEvents[M adk.MessageType](w io.Writer, surfaceID string, rootChildren
 			content, toolCallID, toolName := msgops.DrainToolResult(mo)
 			log.Printf("[a2ui] tool result (%d chars): %.200s", len(content), content)
 			if !writerBroken {
-				_ = emitAgentTrace(w, "tool_result", "Tool result received", map[string]any{
-					"iteration":  iteration,
-					"tool":       toolName,
-					"toolCallId": toolCallID,
-					"chars":      len(content),
-					"preview":    truncateRunes(content, 220),
-				})
+				_ = emitAgentTrace(w, "tool_result", "Tool result received", toolResultTraceDetails(iteration, toolName, toolCallID, content))
 				_ = emitToolChip(w, surfaceID, rootChildren, msgIdx, "tool result", content)
 			}
 			intermediates = append(intermediates, msgops.NewToolResult[M](toolCallID, toolName, content))
@@ -320,12 +315,7 @@ func streamEvents[M adk.MessageType](w io.Writer, surfaceID string, rootChildren
 			if !writerBroken {
 				for _, tc := range toolCalls {
 					log.Printf("[a2ui] tool call: %s args=%s", tc.Name, tc.Args)
-					_ = emitAgentTrace(w, "tool_call", "Tool call requested", map[string]any{
-						"iteration":  iteration,
-						"tool":       tc.Name,
-						"toolCallId": tc.ID,
-						"args":       truncateRunes(tc.Args, 500),
-					})
+					_ = emitAgentTrace(w, "tool_call", "Tool call requested", toolCallTraceDetails(iteration, tc))
 					_ = emitToolChip(w, surfaceID, rootChildren, msgIdx, "tool call", formatToolCall(tc))
 				}
 			}
@@ -393,10 +383,83 @@ func streamEvents[M adk.MessageType](w io.Writer, surfaceID string, rootChildren
 // formatToolCall formats a function tool call for display in a chip.
 func formatToolCall(tc msgops.ToolCall) string {
 	text := "🔧 " + tc.Name
+	if skillName := skillNameFromArgs(tc.Args); skillName != "" {
+		text += "\n" + skillDisplayName(skillName)
+	}
 	if tc.Args != "" {
 		text += "\n" + truncateRunes(tc.Args, 400)
 	}
 	return text
+}
+
+func toolCallTraceDetails(iteration int, tc msgops.ToolCall) map[string]any {
+	details := map[string]any{
+		"iteration":  iteration,
+		"tool":       tc.Name,
+		"toolCallId": tc.ID,
+		"args":       truncateRunes(tc.Args, 500),
+	}
+	if skillName := skillNameFromArgs(tc.Args); skillName != "" {
+		details["skill"] = skillName
+		details["skillDisplayName"] = skillDisplayName(skillName)
+	}
+	return details
+}
+
+func toolResultTraceDetails(iteration int, toolName, toolCallID, content string) map[string]any {
+	details := map[string]any{
+		"iteration":  iteration,
+		"tool":       toolName,
+		"toolCallId": toolCallID,
+		"chars":      len(content),
+		"preview":    truncateRunes(content, 220),
+	}
+	if skillName := skillNameFromContent(content); skillName != "" {
+		details["skill"] = skillName
+		details["skillDisplayName"] = skillDisplayName(skillName)
+	}
+	return details
+}
+
+func skillNameFromArgs(args string) string {
+	var payload struct {
+		Skill string `json:"skill"`
+	}
+	if err := json.Unmarshal([]byte(args), &payload); err == nil {
+		return strings.TrimSpace(payload.Skill)
+	}
+	return ""
+}
+
+func skillNameFromContent(content string) string {
+	for skillName := range skillDisplayNames {
+		if strings.Contains(content, skillName) {
+			return skillName
+		}
+	}
+	return ""
+}
+
+func skillDisplayName(skillName string) string {
+	if displayName, ok := skillDisplayNames[skillName]; ok {
+		return displayName
+	}
+	return skillName
+}
+
+var skillDisplayNames = map[string]string{
+	"skin_diagnosis_v1":      "皮肤诊断与方向判断",
+	"skin_collection_v1":     "皮肤病情采集",
+	"skin_care_plan_v1":      "皮肤护理与治疗方案",
+	"doctor_voice_answer_v2": "值班医生口吻健康问答",
+	"report_reading_v1":      "医学报告单解读",
+	"lung_cancer_v1":         "【管线】肺癌风险与诊疗路径",
+	"weight_loss_v1":         "【管线】减肥与体重管理",
+	"medical_visit_v1":       "【管线】就医决策与挂号路径",
+	"maxillofacial_v1":       "【管线】颌面外科与口腔颌面问题",
+	"tcm_v1":                 "【管线】中医调理与辨证建议",
+	"jifeng_doctor_agent_v1": "【管线】疾风医生智能体",
+	"consumer_medical_v1":    "【管线】消费医疗与健康服务决策",
 }
 
 func truncateRunes(text string, limit int) string {

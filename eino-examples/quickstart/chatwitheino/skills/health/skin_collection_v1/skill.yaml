@@ -1,0 +1,108 @@
+id: skin_collection_v1
+name: skin_collection_v1
+display_name: 皮肤病情采集
+domain: skin
+owner: jiaoziyu
+version: v1.0
+status: draft
+
+short_description: 皮肤诊断后的信息补充与精准追问 Skill。
+description: >-
+  本 Skill 不是首轮入口，仅在 skin_diagnosis_v1 已完成初步判断且信息不足以收敛诊断时触发。
+  负责用最少轮次补齐关键鉴别信息、引导上传患处照片，并让用户理解每个问题为什么重要。
+capabilities:
+  - 皮肤诊断后的关键缺口识别
+  - 基于候选疾病生成精准追问
+  - 引导用户补充患处照片或症状细节
+  - 将追问转为快捷回复或图片采集卡片
+  - 采集过程中动态更新诊断方向
+
+routing:
+  direct_answer:
+    enabled: false
+    priority: 20
+    description: 禁止首轮直接触发；仅可由上游 skin_diagnosis_v1 根据上下文流转。
+    query_intents: []
+    examples: []
+  service_card:
+    enabled: true
+    priority: 80
+    description: skin_diagnosis_v1 初判后信息不足，需要补图、快捷选择或少量追问时触发。
+    query_intents:
+      - 诊断置信度不足，需要补充关键鉴别信息
+      - 候选诊断超过 2 个，需要追问收敛
+      - 初判后建议补充图片或更多症状细节
+    examples:
+      - 红疹多久了？有没有脱皮或渗液？
+      - 可以补一张近距离清晰照片吗？
+
+preconditions:
+  - skin_needs_collection == true
+
+demand_scenarios:
+  strong:
+    - skin_diagnosis_v1 已判断需要继续采集，且本轮应通过追问或补图收敛诊断。
+  medium:
+    - 用户在皮肤诊断多轮中回复了部分信息，但仍缺最高价值鉴别点。
+  weak:
+    - 首轮皮肤问题、非皮肤问题、已明确需要治疗方案的场景。
+
+entrypoints:
+  vita:
+    direct_answer: false
+    service_card: true
+    description: 作为皮肤诊断链路中的中间采集节点。
+  baikan:
+    enabled: false
+    mode: []
+    description: 待确认是否独立分发。
+  quick_test:
+    enabled: true
+    mode:
+      - service_card
+    description: 支持模拟 skin_diagnosis 后的追问/补图链路。
+  skill_supply:
+    enabled: true
+    target:
+      - skin_diagnosis_v1
+      - skin_flow
+
+product:
+  framework: health_skill_registration_v1
+  difference_from_vita: []
+  demo:
+    images: []
+    url: null
+  current_stage: demo
+
+service_card:
+  enabled: true
+  card_type:
+    - multimodal_large
+    - quick_test
+  title: 补充关键信息
+  subtitle: 用 1-3 个问题帮助皮肤判断更快收敛。
+  cta: 去补充
+  target:
+    type: skill
+    url: null
+  trigger_policy:
+    show_after_main_answer: true
+    max_per_session: 3
+    avoid_when_direct_answer: true
+
+dependencies:
+  - skin_diagnosis_v1
+notes:
+  - 本 Skill 不输出最终诊断或完整治疗方案。
+  - 若采集过程中发现高危信号，可直接提示就医。
+
+generated:
+  from: SKILL.md
+  reviewed: false
+  generated_at: 2026-06-11
+  needs_review:
+    - routing.service_card.priority
+    - baikan.enabled
+    - product.demo.url
+    - service_card.max_per_session

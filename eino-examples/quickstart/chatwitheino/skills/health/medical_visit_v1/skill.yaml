@@ -1,0 +1,110 @@
+id: medical_visit_v1
+name: medical_visit_v1
+display_name: 【管线】就医决策与挂号路径
+domain: medical_visit
+owner: pending
+version: v1.0
+status: draft
+
+short_description: 要不要就医、挂什么科、急诊/门诊和检查路径专项 Skill。
+description: >-
+  当用户明确询问是否需要就医、挂什么科、急诊还是门诊、先做什么检查、就医前准备或转诊路径时触发。
+  强需求直接回答；中相关性命中时，以服务卡承接挂号、问诊、检查准备或就医路径服务。
+capabilities:
+  - 就医必要性与紧急程度判断
+  - 科室分流和挂号路径建议
+  - 急诊红线与门诊优先级判断
+  - 检查准备和复诊/转诊路径规划
+
+routing:
+  direct_answer:
+    enabled: true
+    priority: 84
+    description: 用户明确询问要不要去医院、挂什么科、急诊还是门诊、检查路径时直接回答。
+    query_intents:
+      - 要不要就医、急不急、是否去急诊
+      - 挂什么科、哪个科更合适
+      - 先做什么检查、就医前准备什么资料
+      - 多科室之间分流和复诊/转诊路径
+    examples:
+      - 胸口疼要不要去急诊？
+      - 这个情况挂什么科？
+      - 去医院前需要先做什么检查？
+  service_card:
+    enabled: true
+    priority: 70
+    description: 主回答后自然需要挂号、医生问诊、检查准备或就医路径承接时出卡。
+    query_intents:
+      - 疾病/症状回答后需要挂号或问诊服务
+      - 需要根据城市、医院、科室偏好继续规划
+    examples:
+      - 能帮我安排挂号路径吗？
+      - 我想找医生看这个问题
+
+demand_scenarios:
+  strong:
+    - 明确问就医决策、科室选择、急诊/门诊或检查路径。
+  medium:
+    - 主回答后需要医疗服务承接，但用户没有直接问挂号。
+  weak:
+    - 纯疾病科普、治疗方案或报告解读，无就医路径诉求。
+
+entrypoints:
+  vita:
+    direct_answer: true
+    service_card: true
+    description: 健康管家就医路径和挂号服务承接。
+  baikan:
+    enabled: false
+    mode: []
+    description: 待确认是否进入百看分发。
+  quick_test:
+    enabled: true
+    mode:
+      - direct_answer
+      - service_card
+    description: 支持就医决策、科室分流和急诊红线测试。
+  skill_supply:
+    enabled: true
+    target:
+      - health_agent
+      - medical_visit_flow
+
+product:
+  framework: health_skill_registration_v1
+  difference_from_vita: []
+  demo:
+    images: []
+    url: null
+  current_stage: pipeline_draft
+
+service_card:
+  enabled: true
+  card_type:
+    - service_large
+    - followup_bubbles
+  title: 规划就医路径
+  subtitle: 判断急诊/门诊、推荐科室，并整理检查和挂号准备。
+  cta: 继续规划
+  target:
+    type: skill
+    url: null
+  trigger_policy:
+    show_after_main_answer: true
+    max_per_session: 2
+    avoid_when_direct_answer: false
+
+dependencies: []
+notes:
+  - 本 Skill 更偏路径分发，不替代垂直专科 Skill 的疾病诊断和治疗方案。
+
+generated:
+  from: SKILL.md
+  reviewed: false
+  generated_at: 2026-06-11
+  needs_review:
+    - owner
+    - baikan.enabled
+    - service_card.title
+    - product.demo.url
+    - city_hospital_routing

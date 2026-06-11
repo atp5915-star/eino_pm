@@ -1,0 +1,122 @@
+id: skin_care_plan_v1
+name: skin_care_plan_v1
+display_name: 皮肤护理与治疗方案
+domain: skin
+owner: jiaoziyu
+version: v1.0
+status: draft
+
+short_description: 皮肤病或皮肤健康场景的可执行治疗、护理和管理方案 Skill。
+description: >-
+  当皮肤诊断方向已明确，或用户自述已知皮肤病名称并提出治疗、用药、护理、预后等诉求时触发。
+  负责输出具体可执行的处理方案、用药/护理建议、禁忌、观察节奏和就医边界。
+capabilities:
+  - 皮肤病治疗和护理方案生成
+  - 已确诊皮肤病的用药与复发处理建议
+  - 基于部位、严重度、风险边界给出个性化管理方案
+  - 查询非处方外用/口服药通用建议
+  - 输出医生服务、就医或后续追问卡片
+
+routing:
+  direct_answer:
+    enabled: true
+    priority: 85
+    description: 用户已明确皮肤病名称并提出治疗诉求，或上游皮肤诊断已收敛时，由本 Skill 直接输出方案。
+    query_intents:
+      - 已知皮肤病问怎么办、怎么治、用什么药
+      - 医生已诊断或用户自述确诊后问复发处理
+      - 皮肤护理、治疗步骤、疗程、禁忌和就医边界咨询
+      - skin_diagnosis_v1 或 skin_collection_v1 已收敛后需要方案承接
+    examples:
+      - 我得了湿疹，怎么用药？
+      - 医生说是脚气，复发了怎么办？
+      - 痤疮能用什么药？多久能好？
+  service_card:
+    enabled: true
+    priority: 65
+    description: 主回答后用户需要问医生、挂号、方案细化或后续追问时，出服务卡或 followup bubbles 承接。
+    query_intents:
+      - 诊断需要线下确认或中高危场景需要医生服务
+      - 用户明确表达想问皮肤科医生、找医生或挂号
+      - 方案结束后推荐下一步追问、用药细化或就医咨询
+    examples:
+      - 想找皮肤科医生再看看
+      - 这个需要去医院吗？
+
+preconditions: []
+
+demand_scenarios:
+  strong:
+    - 用户已明确皮肤病名称，同时提出治疗、用药、护理、复发或预后诉求。
+    - 上游皮肤诊断链路已收敛，需要给具体处理方案。
+  medium:
+    - 主回答后需要推荐医生服务、复诊、挂号或用药细化。
+  weak:
+    - 用户只描述症状但未明确诊断，应先由 skin_diagnosis_v1 处理。
+    - 用户泛泛问皮肤病百科或病因，无治疗诉求。
+
+entrypoints:
+  vita:
+    direct_answer: true
+    service_card: true
+    description: 文心健康管家皮肤方案与医生服务承接节点。
+  baikan:
+    enabled: false
+    mode: []
+    description: 待确认是否进入百看分发。
+  quick_test:
+    enabled: true
+    mode:
+      - direct_answer
+      - service_card
+    description: 支持已知皮肤病治疗与方案测试。
+  skill_supply:
+    enabled: true
+    target:
+      - skin_diagnosis_v1
+      - skin_collection_v1
+      - skin_flow
+
+tools:
+  - otc_drug_lookup
+
+product:
+  framework: health_skill_registration_v1
+  difference_from_vita: []
+  demo:
+    images: []
+    url: null
+  current_stage: demo
+
+service_card:
+  enabled: true
+  card_type:
+    - service_mini
+    - service_large
+    - followup_bubbles
+  title: 继续细化皮肤方案
+  subtitle: 可进一步问医生、看就医边界或细化用药护理。
+  cta: 继续咨询
+  target:
+    type: skill
+    url: null
+  trigger_policy:
+    show_after_main_answer: true
+    max_per_session: 2
+    avoid_when_direct_answer: false
+
+dependencies:
+  - otc_drug_lookup
+notes:
+  - 旧版内部也称 skin_treatment。
+  - 所有皮肤科疾病治疗问题优先归本 Skill，而不是通用治疗方案 Skill。
+
+generated:
+  from: SKILL.md
+  reviewed: false
+  generated_at: 2026-06-11
+  needs_review:
+    - baikan.enabled
+    - service_card.title
+    - service_card.max_per_session
+    - product.demo.url
